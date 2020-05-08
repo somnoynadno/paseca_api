@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"os"
+	"paseca/models"
 )
 
 var db *gorm.DB
@@ -27,7 +28,25 @@ func init() {
 
 	// Migrate the schema
 	// Notice: many-to-many first
-	db.AutoMigrate()
+	db.AutoMigrate(
+		models.FamilyDisease{},
+		models.BeeBreed{},
+		models.BeeDisease{},
+		models.BeeFamily{},
+		models.BeeFamilyStatus{},
+		models.BeeFarm{},
+		models.BeeFarmSize{},
+		models.BeeFarmType{},
+		models.Hive{},
+		models.HiveFormat{},
+		models.HiveFrameType{},
+		models.HoneyHarvest{},
+		models.HoneySale{},
+		models.HoneyType{},
+		models.Reminder{},
+		models.SubscriptionStatus{},
+		models.SubscriptionType{},
+		models.User{})
 }
 
 func GetDB() *gorm.DB {
