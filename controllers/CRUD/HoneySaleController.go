@@ -40,7 +40,7 @@ var HoneySaleRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HoneySale, id).Error
+	err := db.Preload("HoneyType").Preload("BeeFarm").First(&HoneySale, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +87,10 @@ var HoneySaleUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newHoneySale.HoneyType = models.HoneyType{}
+	newHoneySale.BeeFarm = models.BeeFarm{}
+
 	err = db.Model(&HoneySale).Updates(newHoneySale).Error
 
 	if err != nil {
@@ -126,7 +130,8 @@ var HoneySaleQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("HoneyType").Preload("BeeFarm").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

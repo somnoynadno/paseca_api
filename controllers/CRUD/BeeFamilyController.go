@@ -40,7 +40,9 @@ var BeeFamilyRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFamily, id).Error
+	err := db.Preload("BeeFarm").Preload("BeeBreed").Preload("BeeFamilyStatus").
+		Preload("Hive").Preload("HoneyHarvests").Preload("BeeDiseases").
+		Preload("Parent1").Preload("Parent2").First(&BeeFamily, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +89,14 @@ var BeeFamilyUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newBeeFamily.BeeFarm = models.BeeFarm{}
+	newBeeFamily.BeeBreed = models.BeeBreed{}
+	newBeeFamily.BeeFamilyStatus = models.BeeFamilyStatus{}
+	newBeeFamily.Hive = new(models.Hive)
+	newBeeFamily.Parent1 = new(models.BeeFamily)
+	newBeeFamily.Parent2 = new(models.BeeFamily)
+
 	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
 
 	if err != nil {
@@ -126,7 +136,10 @@ var BeeFamilyQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	// базе данных пиздец
+	err := db.Preload("BeeFarm").Preload("BeeBreed").Preload("BeeFamilyStatus").
+		Preload("Hive").Preload("Parent1").Preload("Parent2").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

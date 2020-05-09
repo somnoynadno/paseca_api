@@ -40,7 +40,8 @@ var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&User, id).Error
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
+		Preload("BeeFarms").First(&User, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +88,10 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newUser.SubscriptionType = models.SubscriptionType{}
+	newUser.SubscriptionStatus = models.SubscriptionStatus{}
+
 	err = db.Model(&User).Updates(newUser).Error
 
 	if err != nil {
@@ -126,7 +131,8 @@ var UserQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

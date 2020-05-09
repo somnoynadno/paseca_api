@@ -40,7 +40,7 @@ var ReminderRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&Reminder, id).Error
+	err := db.Preload("BeeFarm").First(&Reminder, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +87,9 @@ var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newReminder.BeeFarm = models.BeeFarm{}
+
 	err = db.Model(&Reminder).Updates(newReminder).Error
 
 	if err != nil {
@@ -126,7 +129,8 @@ var ReminderQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("BeeFarm").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

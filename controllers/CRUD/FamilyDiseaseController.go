@@ -40,7 +40,7 @@ var FamilyDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&FamilyDisease, id).Error
+	err := db.Preload("BeeFamily").Preload("BeeDisease").First(&FamilyDisease, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +87,10 @@ var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newFamilyDisease.BeeFamily = models.BeeFamily{}
+	newFamilyDisease.BeeDisease = models.BeeDisease{}
+
 	err = db.Model(&FamilyDisease).Updates(newFamilyDisease).Error
 
 	if err != nil {
@@ -126,7 +130,8 @@ var FamilyDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("BeeFamily").Preload("BeeDisease").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

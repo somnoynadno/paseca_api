@@ -40,7 +40,7 @@ var HoneyHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HoneyHarvest, id).Error
+	err := db.Preload("HoneyType").Preload("BeeFamily").First(&HoneyHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -87,6 +87,10 @@ var HoneyHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// do NOT update recursively
+	newHoneyHarvest.HoneyType = models.HoneyType{}
+	newHoneyHarvest.BeeFamily = models.BeeFamily{}
+
 	err = db.Model(&HoneyHarvest).Updates(newHoneyHarvest).Error
 
 	if err != nil {
@@ -126,7 +130,8 @@ var HoneyHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("HoneyType").Preload("BeeFamily").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
