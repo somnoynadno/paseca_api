@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  paseca_api:
+    build: .
+    container_name: "paseca_api"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - "6060:6060"
+    restart: "always"
+    network_mode: "host"
