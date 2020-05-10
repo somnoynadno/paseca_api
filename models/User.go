@@ -14,5 +14,5 @@ type User struct {
 	SubscriptionStatus   SubscriptionStatus `json:"subscription_status"`
 	SubscriptionTypeID   uint               `json:"subscription_type_id"`
 	SubscriptionType     SubscriptionType   `json:"subscription_type"`
-	BeeFarms             *[]BeeFarm         `json:"bee_farms"`
+	BeeFarms             []BeeFarm          `json:"bee_farms"`
 }

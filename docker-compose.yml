@@ -4,8 +4,6 @@ services:
   paseca_api:
     build: .
     container_name: "paseca_api"
-    depends_on:
-      - postgres
     env_file:
       - .env
     ports:
