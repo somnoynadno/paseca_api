@@ -94,9 +94,9 @@ var BeeFamilyUpdate = func(w http.ResponseWriter, r *http.Request) {
 	newBeeFamily.BeeFarm = models.BeeFarm{}
 	newBeeFamily.BeeBreed = models.BeeBreed{}
 	newBeeFamily.BeeFamilyStatus = models.BeeFamilyStatus{}
-	newBeeFamily.Hive = new(models.Hive)
-	newBeeFamily.Parent1 = new(models.BeeFamily)
-	newBeeFamily.Parent2 = new(models.BeeFamily)
+	newBeeFamily.Hive = BeeFamily.Hive
+	newBeeFamily.Parent1 = BeeFamily.Parent1
+	newBeeFamily.Parent2 = BeeFamily.Parent2
 
 	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
 
