@@ -65,6 +65,12 @@ func main() {
 	router.HandleFunc("/api/bee_farm_type/{id}", CRUD.BeeFarmTypeUpdate).Methods("PUT")
 	router.HandleFunc("/api/bee_farm_type/{id}", CRUD.BeeFarmTypeDelete).Methods("DELETE")
 
+	router.HandleFunc("/api/control_harvest", CRUD.ControlHarvestQuery).Methods("GET")
+	router.HandleFunc("/api/control_harvest", CRUD.ControlHarvestCreate).Methods("POST")
+	router.HandleFunc("/api/control_harvest/{id}", CRUD.ControlHarvestRetrieve).Methods("GET")
+	router.HandleFunc("/api/control_harvest/{id}", CRUD.ControlHarvestUpdate).Methods("PUT")
+	router.HandleFunc("/api/control_harvest/{id}", CRUD.ControlHarvestDelete).Methods("DELETE")
+
 	router.HandleFunc("/api/family_disease", CRUD.FamilyDiseaseQuery).Methods("GET")
 	router.HandleFunc("/api/family_disease", CRUD.FamilyDiseaseCreate).Methods("POST")
 	router.HandleFunc("/api/family_disease/{id}", CRUD.FamilyDiseaseRetrieve).Methods("GET")
