@@ -119,6 +119,12 @@ func main() {
 	router.HandleFunc("/api/reminder/{id}", CRUD.ReminderUpdate).Methods("PUT")
 	router.HandleFunc("/api/reminder/{id}", CRUD.ReminderDelete).Methods("DELETE")
 
+	router.HandleFunc("/api/news", CRUD.NewsQuery).Methods("GET")
+	router.HandleFunc("/api/news", CRUD.NewsCreate).Methods("POST")
+	router.HandleFunc("/api/news/{id}", CRUD.NewsRetrieve).Methods("GET")
+	router.HandleFunc("/api/news/{id}", CRUD.NewsUpdate).Methods("PUT")
+	router.HandleFunc("/api/news/{id}", CRUD.NewsDelete).Methods("DELETE")
+
 	router.HandleFunc("/api/subscription_status", CRUD.SubscriptionStatusQuery).Methods("GET")
 	router.HandleFunc("/api/subscription_status", CRUD.SubscriptionStatusCreate).Methods("POST")
 	router.HandleFunc("/api/subscription_status/{id}", CRUD.SubscriptionStatusRetrieve).Methods("GET")
