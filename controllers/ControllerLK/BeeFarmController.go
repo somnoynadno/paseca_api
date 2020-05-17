@@ -7,7 +7,6 @@ import (
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
-	"strconv"
 )
 
 type BeeFarm struct {
@@ -75,7 +74,6 @@ var GetBeeFarmByID = func(w http.ResponseWriter, r *http.Request) {
 
 var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 	EditModel := &BeeFarmEditModel{}
-	id64, _ := strconv.ParseUint(r.Context().Value("context").(u.Values).Get("user_id"),10, 64)
 
 	err := json.NewDecoder(r.Body).Decode(EditModel)
 	if err != nil {
@@ -83,7 +81,7 @@ var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := uint(id64)
+	id := u.GetUserIDFromRequest(r)
 	Model := models.BeeFarm{UserID: id, Location: EditModel.Location,
 		Name: EditModel.Name, BeeFarmTypeID: EditModel.BeeFarmTypeID,
 		BeeFarmSizeID: EditModel.BeeFarmSizeID}

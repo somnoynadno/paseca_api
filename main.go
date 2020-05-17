@@ -163,6 +163,8 @@ func main() {
 	router.HandleFunc("/api/lk/honey_types", ControllerLK.GetHoneyTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_families", ControllerLK.GetUsersBeeFamilies).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm", ControllerLK.CreateBeeFarm).Methods("POST")
+	router.HandleFunc("/api/lk/honey_harvest", ControllerLK.CreateHoneyHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/honey_sale", ControllerLK.CreateHoneySale).Methods("POST")
 
 	// middleware usage
 	// do NOT modify the order
