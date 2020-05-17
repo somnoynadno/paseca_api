@@ -24,7 +24,8 @@ var GetUserBeeFarms = func(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Where("user_id = ?", id).Find(&entities).Error
+	err := db.Preload("BeeFarmType").Preload("BeeFarmSize").
+		Where("user_id = ?", id).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
