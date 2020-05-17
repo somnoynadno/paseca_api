@@ -7,6 +7,7 @@ import (
 	"os"
 	"paseca/controllers/AuthController"
 	"paseca/controllers/CRUD"
+	"paseca/controllers/ControllerLK"
 	"paseca/db"
 	"paseca/middleware"
 	u "paseca/utils"
@@ -148,6 +149,13 @@ func main() {
 
 	// AUTH PATHS
 	router.HandleFunc("/api/auth/login", AuthController.Authenticate).Methods("POST")
+
+	// LK PATHS
+	router.HandleFunc("/api/lk/news", ControllerLK.GetLastNews).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_types", ControllerLK.GetBeeFarmTypes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_breeds", ControllerLK.GetBeeBreeds).Methods("GET")
+	router.HandleFunc("/api/lk/honey_harvests", ControllerLK.GetUsersHoneyHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_sizes", ControllerLK.GetBeeFarmSizes).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order
