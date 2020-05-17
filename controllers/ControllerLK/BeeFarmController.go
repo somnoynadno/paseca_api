@@ -7,6 +7,7 @@ import (
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
+	"strconv"
 )
 
 type BeeFarm struct {
@@ -17,6 +18,13 @@ type BeeFarm struct {
 	BeeFarmType   BeeFarmType  `json:"bee_farm_type"`
 	BeeFarmSizeID uint         `json:"bee_farm_size_id"`
 	BeeFarmSize   BeeFarmSize  `json:"bee_farm_size"`
+}
+
+type BeeFarmEditModel struct {
+	Name          string   `json:"name"`
+	Location      *string  `json:"location"`
+	BeeFarmTypeID uint     `json:"bee_farm_type_id"`
+	BeeFarmSizeID uint     `json:"bee_farm_size_id"`
 }
 
 var GetUserBeeFarms = func(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +70,31 @@ var GetBeeFarmByID = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		u.RespondJSON(w, res)
+	}
+}
+
+var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
+	EditModel := &BeeFarmEditModel{}
+	id64, _ := strconv.ParseUint(r.Context().Value("context").(u.Values).Get("user_id"),10, 64)
+
+	err := json.NewDecoder(r.Body).Decode(EditModel)
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	id := uint(id64)
+	Model := models.BeeFarm{UserID: id, Location: EditModel.Location,
+		Name: EditModel.Name, BeeFarmTypeID: EditModel.BeeFarmTypeID,
+		BeeFarmSizeID: EditModel.BeeFarmSizeID}
+
+	db := db.GetDB()
+	err = db.Create(&Model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
 	}
 }
 
