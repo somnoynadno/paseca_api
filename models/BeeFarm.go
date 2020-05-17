@@ -10,8 +10,8 @@ type BeeFarm struct {
 	BeeFarmType   BeeFarmType  `json:"bee_farm_type"`
 	BeeFarmSizeID uint         `json:"bee_farm_size_id"`
 	BeeFarmSize   BeeFarmSize  `json:"bee_farm_size"`
-	Reminders     *[]Reminder  `json:"reminders"`
-	BeeFamilies   *[]BeeFamily `json:"bee_families"`
-	HoneySales    *[]HoneySale `json:"honey_sales"`
-	Hives         *[]Hive      `json:"hives"`
+	Reminders     []*Reminder  `json:"reminders"`
+	BeeFamilies   []*BeeFamily `json:"bee_families"`
+	HoneySales    []*HoneySale `json:"honey_sales"`
+	Hives         []*Hive      `json:"hives"`
 }
