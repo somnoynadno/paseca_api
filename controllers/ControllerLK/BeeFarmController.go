@@ -40,7 +40,7 @@ var GetUserBeeFarms = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var GetBeeFarm = func(w http.ResponseWriter, r *http.Request) {
+var GetBeeFarmByID = func(w http.ResponseWriter, r *http.Request) {
 	var BeeFarm models.BeeFarm
 
 	params := mux.Vars(r)
@@ -55,7 +55,7 @@ var GetBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(entities)
+	res, err := json.Marshal(BeeFarm)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
