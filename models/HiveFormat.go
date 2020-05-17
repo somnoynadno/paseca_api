@@ -1,7 +1,7 @@
 package models
 
 type HiveFormat struct {
-	BaseModel
+	BaseModelWithCustom
 	Name string `json:"name" gorm:"not null;"`
 	Size *int   `json:"size"`
 }

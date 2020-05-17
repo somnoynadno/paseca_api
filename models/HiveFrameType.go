@@ -1,6 +1,6 @@
 package models
 
 type HiveFrameType struct {
-	BaseModel
+	BaseModelWithCustom
 	Name string `json:"name" gorm:"not null;"`
 }

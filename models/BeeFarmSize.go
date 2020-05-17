@@ -1,7 +1,7 @@
 package models
 
 type BeeFarmSize struct {
-	BaseModel
+	BaseModelWithCustom
 	Name        string  `json:"name" gorm:"not null"`
 	Description *string `json:"description"`
 	MaxX        int     `json:"max_x" gorm:"not null"`

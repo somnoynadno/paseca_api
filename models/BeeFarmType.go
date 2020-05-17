@@ -1,6 +1,6 @@
 package models
 
 type BeeFarmType struct {
-	BaseModel
+	BaseModelWithCustom
 	Name string `json:"name" gorm:"not null;"`
 }

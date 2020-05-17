@@ -1,7 +1,7 @@
 package models
 
 type BeeFamilyStatus struct {
-	BaseModel
+	BaseModelWithCustom
 	Status string  `json:"status" gorm:"not null;"`
 	Color  *string `json:"color"`
 }
