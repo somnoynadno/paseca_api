@@ -27,7 +27,7 @@ type BeeFarmEditModel struct {
 	BeeFarmSizeID uint     `json:"bee_farm_size_id"`
 }
 
-var GetUserBeeFarms = func(w http.ResponseWriter, r *http.Request) {
+var GetUsersBeeFarms = func(w http.ResponseWriter, r *http.Request) {
 	var entities []BeeFarm
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 

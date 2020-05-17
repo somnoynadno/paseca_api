@@ -11,4 +11,5 @@ type HoneySale struct {
 	HoneyType   HoneyType  `json:"honey_type"`
 	BeeFarmID   uint       `json:"bee_farm_id"`
 	BeeFarm     BeeFarm    `json:"bee_farm"`
+	UserID      uint       `json:"user_id"`
 }

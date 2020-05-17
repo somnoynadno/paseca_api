@@ -13,4 +13,5 @@ type HoneyHarvest struct {
 	HoneyType   HoneyType  `json:"honey_type"`
 	BeeFamilyID uint       `json:"bee_family_id"`
 	BeeFamily   BeeFamily  `json:"bee_family"`
+	UserID      uint       `json:"user_id"`
 }

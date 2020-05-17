@@ -155,10 +155,13 @@ func main() {
 	router.HandleFunc("/api/lk/bee_farm_types", ControllerLK.GetBeeFarmTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_breeds", ControllerLK.GetBeeBreeds).Methods("GET")
 	router.HandleFunc("/api/lk/honey_harvests", ControllerLK.GetUsersHoneyHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/honey_sales", ControllerLK.GetUsersHoneySales).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm_sizes", ControllerLK.GetBeeFarmSizes).Methods("GET")
-	router.HandleFunc("/api/lk/bee_farms", ControllerLK.GetUserBeeFarms).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farms", ControllerLK.GetUsersBeeFarms).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm/{id}", ControllerLK.GetBeeFarmByID).Methods("GET")
 	router.HandleFunc("/api/lk/user", ControllerLK.GetUser).Methods("GET")
+	router.HandleFunc("/api/lk/honey_types", ControllerLK.GetHoneyTypes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_families", ControllerLK.GetUsersBeeFamilies).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm", ControllerLK.CreateBeeFarm).Methods("POST")
 
 	// middleware usage
