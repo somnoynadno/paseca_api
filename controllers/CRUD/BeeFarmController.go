@@ -41,7 +41,7 @@ var BeeFarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
 
 	db := db.GetDB()
 	err := db.Preload("User").Preload("BeeFarmType").Preload("BeeFarmSize").
-		Preload("Reminders").Preload("BeeFamilies").Preload("HoneySales").
+		Preload("Reminders").Preload("BeeFamilies").Preload("HoneySales").Preload("Hives").
 		First(&BeeFarm, id).Error
 
 	if err != nil {
@@ -133,7 +133,8 @@ var BeeFarmQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("User").Preload("BeeFarmType").Preload("BeeFarmSize").
+	err := db.Preload("User").Preload("BeeFarmType").
+		Preload("BeeFarmSize").Preload("Hives").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {

@@ -14,7 +14,7 @@ type BeeFamily struct {
 	BeeFamilyStatusID  uint              `json:"bee_family_status_id"`
 	BeeFamilyStatus    BeeFamilyStatus   `json:"bee_family_status"`
 	HiveID             *uint             `json:"hive_id"`
-	Hive               *Hive             `json:"hive"`
+	Hive               Hive              `json:"hive"`
 	HoneyHarvests      []*HoneyHarvest   `json:"honey_harvests"`
 	BeeDiseases        []*BeeDisease     `json:"bee_diseases" gorm:"many2many:family_diseases;"`
 	Parent1ID          *uint             `json:"parent1_id"`

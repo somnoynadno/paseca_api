@@ -40,8 +40,8 @@ var HiveRetrieve = func(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").Preload("HiveFormat").Preload("HiveFrameType").
-		First(&Hive, id).Error
+	err := db.Preload("HiveFormat").
+		Preload("BeeFarm").Preload("HiveFrameType").First(&Hive, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -89,9 +89,9 @@ var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newHive.BeeFamily = Hive.BeeFamily
 	newHive.HiveFormat = models.HiveFormat{}
 	newHive.HiveFrameType = models.HiveFrameType{}
+	newHive.BeeFarm = models.BeeFarm{}
 
 	err = db.Model(&Hive).Updates(newHive).Error
 
@@ -132,7 +132,7 @@ var HiveQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").Preload("HiveFormat").Preload("HiveFrameType").
+	err := db.Preload("HiveFormat").Preload("HiveFrameType").Preload("BeeFarm").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {

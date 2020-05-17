@@ -13,4 +13,5 @@ type BeeFarm struct {
 	Reminders     *[]Reminder  `json:"reminders"`
 	BeeFamilies   *[]BeeFamily `json:"bee_families"`
 	HoneySales    *[]HoneySale `json:"honey_sales"`
+	Hives         *[]Hive      `json:"hives"`
 }
