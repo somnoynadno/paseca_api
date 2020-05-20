@@ -129,6 +129,12 @@ func main() {
 	router.HandleFunc("/api/admin/news/{id}", CRUD.NewsUpdate).Methods("PUT")
 	router.HandleFunc("/api/admin/news/{id}", CRUD.NewsDelete).Methods("DELETE")
 
+	router.HandleFunc("/api/admin/pollen_harvest", CRUD.PollenHarvestQuery).Methods("GET")
+	router.HandleFunc("/api/admin/pollen_harvest", CRUD.PollenHarvestCreate).Methods("POST")
+	router.HandleFunc("/api/admin/pollen_harvest/{id}", CRUD.PollenHarvestRetrieve).Methods("GET")
+	router.HandleFunc("/api/admin/pollen_harvest/{id}", CRUD.PollenHarvestUpdate).Methods("PUT")
+	router.HandleFunc("/api/admin/pollen_harvest/{id}", CRUD.PollenHarvestDelete).Methods("DELETE")
+
 	router.HandleFunc("/api/admin/subscription_status", CRUD.SubscriptionStatusQuery).Methods("GET")
 	router.HandleFunc("/api/admin/subscription_status", CRUD.SubscriptionStatusCreate).Methods("POST")
 	router.HandleFunc("/api/admin/subscription_status/{id}", CRUD.SubscriptionStatusRetrieve).Methods("GET")

@@ -45,6 +45,7 @@ func init() {
 		models.HoneySale{},
 		models.HoneyType{},
 		models.News{},
+		models.PollenHarvest{},
 		models.Reminder{},
 		models.SubscriptionStatus{},
 		models.SubscriptionType{},
