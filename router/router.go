@@ -151,6 +151,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/news", ControllerLK.GetLastNews).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm_types", ControllerLK.GetBeeFarmTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_breeds", ControllerLK.GetBeeBreeds).Methods("GET")
+	router.HandleFunc("/api/lk/bee_family_statuses", ControllerLK.GetBeeFamilyStatuses).Methods("GET")
 	router.HandleFunc("/api/lk/honey_harvests", ControllerLK.GetUsersHoneyHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/honey_sales", ControllerLK.GetUsersHoneySales).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm_sizes", ControllerLK.GetBeeFarmSizes).Methods("GET")
@@ -159,7 +160,9 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/user", ControllerLK.GetUser).Methods("GET")
 	router.HandleFunc("/api/lk/honey_types", ControllerLK.GetHoneyTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_families", ControllerLK.GetUsersBeeFamilies).Methods("GET")
+
 	router.HandleFunc("/api/lk/bee_farm", ControllerLK.CreateBeeFarm).Methods("POST")
+	router.HandleFunc("/api/lk/bee_family", ControllerLK.CreateBeeFamily).Methods("POST")
 	router.HandleFunc("/api/lk/honey_harvest", ControllerLK.CreateHoneyHarvest).Methods("POST")
 	router.HandleFunc("/api/lk/honey_sale", ControllerLK.CreateHoneySale).Methods("POST")
 

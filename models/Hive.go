@@ -11,4 +11,5 @@ type Hive struct {
 	HiveFrameType   HiveFrameType `json:"hive_frame_type"`
 	BeeFarmID       uint          `json:"bee_farm_id"`
 	BeeFarm         BeeFarm       `json:"bee_farm"`
+	BeeFamilyID     *uint         `json:"bee_family_id"`
 }

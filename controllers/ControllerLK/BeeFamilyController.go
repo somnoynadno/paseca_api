@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"paseca/db"
+	"paseca/models"
 	u "paseca/utils"
+	. "time"
 )
 
 type BeeFamilyShort struct {
@@ -35,5 +37,55 @@ var GetUsersBeeFamilies = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		u.RespondJSON(w, res)
+	}
+}
+
+type BeeFamilyCreateModel struct {
+	Name               string   `json:"name"`
+	QueenBeeBornDate   *string  `json:"queen_bee_born_date"`
+	LastInspectionDate *string  `json:"last_inspection_date"`
+	BeeFarmID          uint     `json:"bee_farm_id"`
+	BeeBreedID         uint     `json:"bee_breed_id"`
+	BeeFamilyStatusID  uint     `json:"bee_family_status_id"`
+	Parent1ID          *uint    `json:"parent1_id"`
+	Parent2ID          *uint    `json:"parent2_id"`
+	IsControl          bool     `json:"is_control"`
+}
+
+var CreateBeeFamily = func(w http.ResponseWriter, r *http.Request) {
+	CreateModel := &BeeFamilyCreateModel{}
+
+	err := json.NewDecoder(r.Body).Decode(CreateModel)
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	var queenBeeBornDate *Time
+	var lastInspectionDate *Time
+
+	if CreateModel.QueenBeeBornDate != nil {
+		t, _ := Parse("2006-01-02", *CreateModel.QueenBeeBornDate)
+		queenBeeBornDate = &t
+	}
+	if CreateModel.LastInspectionDate != nil {
+		t, _ := Parse("2006-01-02", *CreateModel.LastInspectionDate)
+		lastInspectionDate = &t
+	}
+
+	Model := models.BeeFamily{BeeFarmID: CreateModel.BeeFarmID,
+		Name: CreateModel.Name, BeeBreedID: CreateModel.BeeBreedID,
+		QueenBeeBornDate: queenBeeBornDate, LastInspectionDate: lastInspectionDate,
+		Parent1ID: CreateModel.Parent1ID, Parent2ID: CreateModel.Parent2ID,
+		IsControl: CreateModel.IsControl, BeeFamilyStatusID: CreateModel.BeeFamilyStatusID,
+	}
+
+	db := db.GetDB()
+	err = db.Create(&Model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
 	}
 }
