@@ -167,6 +167,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/bee_family", ControllerLK.CreateBeeFamily).Methods("POST")
 	router.HandleFunc("/api/lk/honey_harvest", ControllerLK.CreateHoneyHarvest).Methods("POST")
 	router.HandleFunc("/api/lk/honey_sale", ControllerLK.CreateHoneySale).Methods("POST")
+	router.HandleFunc("/api/lk/reminder", ControllerLK.CreateReminder).Methods("POST")
 
 	// middleware usage
 	// do NOT modify the order
