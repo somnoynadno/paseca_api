@@ -160,6 +160,8 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/user", ControllerLK.GetUser).Methods("GET")
 	router.HandleFunc("/api/lk/honey_types", ControllerLK.GetHoneyTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_families", ControllerLK.GetUsersBeeFamilies).Methods("GET")
+	router.HandleFunc("/api/lk/hive_frame_types", ControllerLK.GetHiveFrameTypes).Methods("GET")
+	router.HandleFunc("/api/lk/hive_formats", ControllerLK.GetHiveFormats).Methods("GET")
 
 	router.HandleFunc("/api/lk/bee_farm", ControllerLK.CreateBeeFarm).Methods("POST")
 	router.HandleFunc("/api/lk/bee_family", ControllerLK.CreateBeeFamily).Methods("POST")
