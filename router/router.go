@@ -151,6 +151,8 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/news", ControllerLK.GetLastNews).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm_types", ControllerLK.GetBeeFarmTypes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_breeds", ControllerLK.GetBeeBreeds).Methods("GET")
+	router.HandleFunc("/api/lk/pollen_harvests", ControllerLK.GetUsersPollenHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/control_harvests", ControllerLK.GetUsersControlHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/bee_family_statuses", ControllerLK.GetBeeFamilyStatuses).Methods("GET")
 	router.HandleFunc("/api/lk/honey_harvests", ControllerLK.GetUsersHoneyHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/honey_sales", ControllerLK.GetUsersHoneySales).Methods("GET")
@@ -169,6 +171,8 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/honey_sale", ControllerLK.CreateHoneySale).Methods("POST")
 	router.HandleFunc("/api/lk/reminder", ControllerLK.CreateReminder).Methods("POST")
 	router.HandleFunc("/api/lk/hive", ControllerLK.CreateHive).Methods("POST")
+	router.HandleFunc("/api/lk/control_harvest", ControllerLK.CreateControlHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/pollen_harvest", ControllerLK.CreatePollenHarvest).Methods("POST")
 
 	// middleware usage
 	// do NOT modify the order
