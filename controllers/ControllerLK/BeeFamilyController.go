@@ -2,6 +2,7 @@ package ControllerLK
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -87,5 +88,31 @@ var CreateBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		u.Respond(w, u.Message(true, "OK"))
+	}
+}
+
+var GetBeeFamilyByID = func(w http.ResponseWriter, r *http.Request) {
+	var BeeFamily models.BeeFamily
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	db := db.GetDB()
+	err := db.Preload("BeeBreed").Preload("BeeFamilyStatus").Preload("Hive").
+		Preload("BeeDiseases").Preload("HoneyHarvests").Preload("ControlHarvests").
+		Preload("Parent1").Preload("Parent2").
+		Where("id = ?", id).Find(&BeeFamily).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	res, err := json.Marshal(BeeFamily)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.RespondJSON(w, res)
 	}
 }
