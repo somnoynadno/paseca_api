@@ -16,6 +16,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/{any}", u.HandleOptions).Methods("OPTIONS")
 	router.HandleFunc("/api/{any1}/{any2}", u.HandleOptions).Methods("OPTIONS")
 	router.HandleFunc("/api/{any1}/{any2}/{any3}", u.HandleOptions).Methods("OPTIONS")
+	router.HandleFunc("/api/{any1}/{any2}/{any3}/{any4}", u.HandleOptions).Methods("OPTIONS")
 
 	// ADMIN CRUD
 	router.HandleFunc("/api/admin/bee_breed", CRUD.BeeBreedQuery).Methods("GET")
@@ -170,6 +171,8 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/control_harvest", ControllerLK.CreateControlHarvest).Methods("POST")
 
 	router.HandleFunc("/api/lk/hive", ControllerLK.CreateHive).Methods("POST")
+	router.HandleFunc("/api/lk/hive/set_coords", ControllerLK.SetHiveCoords).Methods("POST")
+	router.HandleFunc("/api/lk/hive/set_hive_bee_family", ControllerLK.SetHiveBeeFamily).Methods("POST")
 
 	router.HandleFunc("/api/lk/hive_formats", ControllerLK.GetHiveFormats).Methods("GET")
 
