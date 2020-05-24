@@ -1,4 +1,4 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
@@ -8,13 +8,12 @@ import (
 	u "paseca/utils"
 )
 
-var GetUser = func(w http.ResponseWriter, r *http.Request) {
-	var entities models.User
+var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFarmType
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionType").Preload("SubscriptionStatus").
-		Where("id = ?", id).Find(&entities).Error
+	err := db.Where("is_custom = false or (is_custom = true and creator_id = ?)", id).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

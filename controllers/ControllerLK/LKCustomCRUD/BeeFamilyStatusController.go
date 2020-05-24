@@ -1,19 +1,15 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
 	"net/http"
 	"paseca/db"
+	"paseca/models"
 	u "paseca/utils"
 )
 
-type BeeFarmType struct {
-	ID   uint   `json:"id"`
-	Name string `json:"name"`
-}
-
-var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
-	var entities []BeeFarmType
+var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFamilyStatus
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,3 +28,4 @@ var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+

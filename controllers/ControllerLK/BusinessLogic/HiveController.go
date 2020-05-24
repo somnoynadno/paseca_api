@@ -1,4 +1,4 @@
-package ControllerLK
+package BusinessLogic
 
 import (
 	"encoding/json"

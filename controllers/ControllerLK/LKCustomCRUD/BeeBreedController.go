@@ -1,20 +1,15 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
 	"net/http"
 	"paseca/db"
+	"paseca/models"
 	u "paseca/utils"
 )
 
-type BeeBreed struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
 var GetBeeBreeds = func(w http.ResponseWriter, r *http.Request) {
-	var entities []BeeBreed
+	var entities []models.BeeBreed
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()

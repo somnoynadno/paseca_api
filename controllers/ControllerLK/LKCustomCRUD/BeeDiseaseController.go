@@ -1,4 +1,4 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
@@ -8,8 +8,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetHiveFrameTypes = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFrameType
+var GetBeeDiseases = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeDisease
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -28,4 +28,5 @@ var GetHiveFrameTypes = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+
 

@@ -1,21 +1,15 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
 	"net/http"
 	"paseca/db"
+	"paseca/models"
 	u "paseca/utils"
 )
 
-type HoneyType struct {
-	ID          uint    `json:"id"`
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
-	BasePrice   int     `json:"base_price"`
-}
-
-var GetHoneyTypes = func(w http.ResponseWriter, r *http.Request) {
-	var entities []HoneyType
+var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HiveFormat
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -34,3 +28,4 @@ var GetHoneyTypes = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+

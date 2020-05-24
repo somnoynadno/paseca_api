@@ -1,4 +1,4 @@
-package ControllerLK
+package BusinessLogic
 
 import (
 	"encoding/json"
@@ -9,21 +9,20 @@ import (
 	"time"
 )
 
-type HoneyHarvestEditModel struct {
-	HoneyTypeID   uint    `json:"honey_type_id"`
-	BeeFamilyID   uint    `json:"bee_family_id"`
+type PollenHarvestEditModel struct {
+	BeeFarmID     uint    `json:"bee_farm_id"`
 	Amount        float64 `json:"amount"`
 	Date          string  `json:"date"`
 }
 
 // TODO: add order by on different columns
 // TODO: add pagination
-var GetUsersHoneyHarvests = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HoneyHarvest
+var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.PollenHarvest
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Preload("HoneyType").Preload("BeeFamily").
+	err := db.Preload("BeeFarm").
 		Where("user_id = ?", id).Order("date desc").Find(&entities).Error
 
 	if err != nil {
@@ -40,8 +39,8 @@ var GetUsersHoneyHarvests = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var CreateHoneyHarvest = func(w http.ResponseWriter, r *http.Request) {
-	EditModel := &HoneyHarvestEditModel{}
+var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
+	EditModel := &PollenHarvestEditModel{}
 
 	err := json.NewDecoder(r.Body).Decode(EditModel)
 	if err != nil {
@@ -56,10 +55,8 @@ var CreateHoneyHarvest = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: predict total price based on honey type and amount
-	Model := models.HoneyHarvest{UserID: id, Amount: EditModel.Amount,
-		TotalPrice: 0, HoneyTypeID: EditModel.HoneyTypeID,
-		BeeFamilyID: EditModel.BeeFamilyID, Date: &t}
+	Model := models.PollenHarvest{UserID: id, Amount: EditModel.Amount,
+		BeeFarmID: EditModel.BeeFarmID, Date: &t}
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

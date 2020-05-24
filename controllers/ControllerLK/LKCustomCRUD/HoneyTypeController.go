@@ -1,4 +1,4 @@
-package ControllerLK
+package LKCustomCRUD
 
 import (
 	"encoding/json"
@@ -8,11 +8,12 @@ import (
 	u "paseca/utils"
 )
 
-var GetLastNews = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.News
+var GetHoneyTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HoneyType
+	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Order("updated_at desc").Limit(10).Find(&entities).Error
+	err := db.Where("is_custom = false or (is_custom = true and creator_id = ?)", id).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -27,4 +28,3 @@ var GetLastNews = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
-
