@@ -2,6 +2,9 @@ package LKCustomCRUD
 
 import (
 	"encoding/json"
+	"errors"
+	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -28,3 +31,38 @@ var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+
+var DeleteBeeFarmTypeByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.BeeFarmType
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	userID := u.GetUserIDFromRequest(r)
+
+	db := db.GetDB()
+	err := db.First(&entity, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	if entity.CreatorID != &userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	res, err := json.Marshal(entity)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.RespondJSON(w, res)
+	}
+}
+
