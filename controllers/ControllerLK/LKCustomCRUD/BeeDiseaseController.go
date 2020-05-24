@@ -32,6 +32,29 @@ var GetBeeDiseases = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var BeeDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.BeeDisease{}
+	err := json.NewDecoder(r.Body).Decode(entity)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	userID := u.GetUserIDFromRequest(r)
+	entity.CreatorID = &userID
+
+	db := db.GetDB()
+	err = db.Create(entity).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		res, _ := json.Marshal(entity)
+		u.RespondJSON(w, res)
+	}
+}
+
 var DeleteBeeDiseaseByID = func(w http.ResponseWriter, r *http.Request) {
 	var entity models.BeeDisease
 

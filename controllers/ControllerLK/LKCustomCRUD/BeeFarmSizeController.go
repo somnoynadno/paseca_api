@@ -32,6 +32,29 @@ var GetBeeFarmSizes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.BeeFarmSize{}
+	err := json.NewDecoder(r.Body).Decode(entity)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	userID := u.GetUserIDFromRequest(r)
+	entity.CreatorID = &userID
+
+	db := db.GetDB()
+	err = db.Create(entity).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		res, _ := json.Marshal(entity)
+		u.RespondJSON(w, res)
+	}
+}
+
 var DeleteBeeFarmSizeByID = func(w http.ResponseWriter, r *http.Request) {
 	var entity models.BeeFarmSize
 

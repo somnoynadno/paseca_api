@@ -152,9 +152,11 @@ func InitRouter() *mux.Router {
 
 	// LK PATHS
 	router.HandleFunc("/api/lk/bee_breeds", LKCustomCRUD.GetBeeBreeds).Methods("GET")
+	router.HandleFunc("/api/lk/bee_breed", LKCustomCRUD.BeeBreedCreate).Methods("POST")
 	router.HandleFunc("/api/lk/bee_breed/{id}", LKCustomCRUD.DeleteBeeBreedByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_diseases", LKCustomCRUD.GetBeeDiseases).Methods("GET")
+	router.HandleFunc("/api/lk/bee_disease", LKCustomCRUD.BeeDiseaseCreate).Methods("POST")
 	router.HandleFunc("/api/lk/bee_disease/{id}", LKCustomCRUD.DeleteBeeDiseaseByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_families", BusinessLogic.GetUsersBeeFamilies).Methods("GET")
@@ -163,6 +165,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/bee_family", BusinessLogic.CreateBeeFamily).Methods("POST")
 
 	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.GetBeeFamilyStatuses).Methods("GET")
+	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.BeeFamilyStatusCreate).Methods("POST")
 	router.HandleFunc("/api/lk/bee_family_status/{id}", LKCustomCRUD.DeleteBeeFamilyStatusByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_farms", BusinessLogic.GetUsersBeeFarms).Methods("GET")
@@ -170,9 +173,11 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/bee_farm", BusinessLogic.CreateBeeFarm).Methods("POST")
 
 	router.HandleFunc("/api/lk/bee_farm_sizes", LKCustomCRUD.GetBeeFarmSizes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_size", LKCustomCRUD.BeeFarmSizeCreate).Methods("POST")
 	router.HandleFunc("/api/lk/bee_farm_size/{id}", LKCustomCRUD.DeleteBeeFarmSizeByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_farm_types", LKCustomCRUD.GetBeeFarmTypes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_type", LKCustomCRUD.BeeFarmTypeCreate).Methods("POST")
 	router.HandleFunc("/api/lk/bee_farm_type/{id}", LKCustomCRUD.DeleteBeeFarmTypeByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/control_harvests", BusinessLogic.GetUsersControlHarvests).Methods("GET")
@@ -184,9 +189,11 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/hive/set_hive_bee_family", BusinessLogic.SetHiveBeeFamily).Methods("POST")
 
 	router.HandleFunc("/api/lk/hive_formats", LKCustomCRUD.GetHiveFormats).Methods("GET")
+	router.HandleFunc("/api/lk/hive_format", LKCustomCRUD.HiveFormatCreate).Methods("POST")
 	router.HandleFunc("/api/lk/hive_format/{id}", LKCustomCRUD.DeleteHiveFormatByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/hive_frame_types", LKCustomCRUD.GetHiveFrameTypes).Methods("GET")
+	router.HandleFunc("/api/lk/hive_frame_type", LKCustomCRUD.HiveFrameTypeCreate).Methods("POST")
 	router.HandleFunc("/api/lk/hive_frame_type/{id}", LKCustomCRUD.DeleteHiveFrameTypeByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/honey_harvests", BusinessLogic.GetUsersHoneyHarvests).Methods("GET")
@@ -196,6 +203,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/honey_sale", BusinessLogic.CreateHoneySale).Methods("POST")
 
 	router.HandleFunc("/api/lk/honey_types", LKCustomCRUD.GetHoneyTypes).Methods("GET")
+	router.HandleFunc("/api/lk/honey_type", LKCustomCRUD.HoneyTypeCreate).Methods("POST")
 	router.HandleFunc("/api/lk/honey_type/{id}", LKCustomCRUD.DeleteHoneyTypeByID).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/news", OtherControllers.GetLastNews).Methods("GET")
