@@ -18,6 +18,7 @@ type HiveCreateModel struct {
 
 var CreateHive = func(w http.ResponseWriter, r *http.Request) {
 	CreateModel := &HiveCreateModel{}
+	id := u.GetUserIDFromRequest(r)
 
 	err := json.NewDecoder(r.Body).Decode(CreateModel)
 	if err != nil {
@@ -27,7 +28,7 @@ var CreateHive = func(w http.ResponseWriter, r *http.Request) {
 
 	Model := models.Hive{BeeFarmID: CreateModel.BeeFarmID,
 		Name: CreateModel.Name, HiveFormatID: CreateModel.HiveFormatID,
-		HiveFrameTypeID: CreateModel.HiveFrameTypeID,
+		HiveFrameTypeID: CreateModel.HiveFrameTypeID, UserID: id,
 	}
 
 	db := db.GetDB()
@@ -42,7 +43,7 @@ var CreateHive = func(w http.ResponseWriter, r *http.Request) {
 
 type HiveCoords struct {
 	CoordX *int `json:"coord_x"`
-	CoordY *int `json:"coord_x"`
+	CoordY *int `json:"coord_y"`
 	HiveID uint `json:"hive_id"`
 }
 
@@ -99,44 +100,129 @@ var SetHiveBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 	Hive := &models.Hive{}
 	BeeFamily := &models.BeeFamily{}
 
-	err = db.First(&Hive, hiveBeeFamily.HiveID).Error
+	if hiveBeeFamily.HiveID != nil {
+		err = db.Model(models.Hive{}).First(&Hive, *hiveBeeFamily.HiveID).Error
 
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			u.HandleNotFound(w)
-		} else {
-			u.HandleBadRequest(w, err)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				u.HandleNotFound(w)
+			} else {
+				u.HandleBadRequest(w, err)
+			}
+			return
 		}
-		return
-	}
 
-	Hive.BeeFamilyID = hiveBeeFamily.BeeFamilyID
-	err = db.Save(&Hive).Error
+		Hive.BeeFamilyID = hiveBeeFamily.BeeFamilyID
+		err = db.Save(&Hive).Error
 
-	if err != nil {
-		u.HandleBadRequest(w, err)
-		return
-	}
-
-	err = db.First(&BeeFamily, hiveBeeFamily.BeeFamilyID).Error
-
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			u.HandleNotFound(w)
-		} else {
+		if err != nil {
 			u.HandleBadRequest(w, err)
+			return
 		}
-		return
+
+		if hiveBeeFamily.BeeFamilyID == nil {
+			err = db.Where("hive_id = ?", hiveBeeFamily.HiveID).First(&BeeFamily).Error
+
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					u.HandleNotFound(w)
+				} else {
+					u.HandleBadRequest(w, err)
+				}
+				return
+			}
+
+			BeeFamily.HiveID = nil
+			err = db.Save(&BeeFamily).Error
+
+			if err != nil {
+				u.HandleBadRequest(w, err)
+				return
+			}
+		}
 	}
 
-	BeeFamily.HiveID = hiveBeeFamily.HiveID
-	err = db.Save(&BeeFamily).Error
+	if hiveBeeFamily.BeeFamilyID != nil {
+		err = db.First(&BeeFamily, *hiveBeeFamily.BeeFamilyID).Error
 
-	if err != nil {
-		u.HandleBadRequest(w, err)
-		return
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				u.HandleNotFound(w)
+			} else {
+				u.HandleBadRequest(w, err)
+			}
+			return
+		}
+
+		BeeFamily.HiveID = hiveBeeFamily.HiveID
+		BeeFamily.BeeFarmID = Hive.BeeFarmID
+		err = db.Save(&BeeFamily).Error
+
+		if err != nil {
+			u.HandleBadRequest(w, err)
+			return
+		}
+
+		if hiveBeeFamily.HiveID == nil {
+			err = db.Where("bee_family_id = ?", hiveBeeFamily.BeeFamilyID).First(&Hive).Error
+
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					u.HandleNotFound(w)
+				} else {
+					u.HandleBadRequest(w, err)
+				}
+				return
+			}
+
+			Hive.BeeFamilyID = nil
+			err = db.Save(&Hive).Error
+
+			if err != nil {
+				u.HandleBadRequest(w, err)
+				return
+			}
+		}
 	}
 
 	u.Respond(w, u.Message(true, "OK"))
 }
+
+type HiveShort struct {
+	ID                uint    `json:"id"`
+	Name              string  `json:"name"`
+	BeeFarmName       string  `json:"bee_farm_name"`
+	HiveFrameTypeName string  `json:"hive_frame_type_name"`
+	HiveFormatName    string  `json:"hive_format_name"`
+	HiveFormatSize    *int    `json:"hive_format_size"`
+}
+
+var GetUsersFreeHives = func(w http.ResponseWriter, r *http.Request) {
+	var entities []HiveShort
+	id := r.Context().Value("context").(u.Values).Get("user_id")
+
+	db := db.GetDB()
+	err := db.Table("hives").
+		Joins("join bee_farms on bee_farms.id = hives.bee_farm_id").
+		Joins("join hive_formats on hive_formats.id = hives.hive_format_id").
+		Joins("join hive_frame_types on hive_frame_types.id = hives.hive_frame_type_id").
+		Select("hives.id, hives.name, bee_farms.name as bee_farm_name, " +
+			"hive_frame_types.name as hive_frame_type_name, hive_formats.name as hive_format_name, " +
+			"hive_formats.size as hive_format_size").
+		Where("hives.user_id = ? and hives.coord_x is null and hives.coord_y is null", id).Scan(&entities).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	res, err := json.Marshal(entities)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.RespondJSON(w, res)
+	}
+}
+
 

@@ -41,6 +41,31 @@ var GetUsersBeeFamilies = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var GetUsersBeeFamiliesWithoutHives = func(w http.ResponseWriter, r *http.Request) {
+	var entities []BeeFamilyShort
+	id := r.Context().Value("context").(u.Values).Get("user_id")
+
+	db := db.GetDB()
+	err := db.Table("bee_families").
+		Joins("join bee_farms on bee_farms.id = bee_families.bee_farm_id").
+		Joins("join users on users.id = bee_farms.user_id").
+		Select("bee_families.id, bee_families.name, bee_farms.name as bee_farm_name").
+		Where("users.id = ? and bee_families.hive_id is null", id).Scan(&entities).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	res, err := json.Marshal(entities)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.RespondJSON(w, res)
+	}
+}
+
 type BeeFamilyCreateModel struct {
 	Name               string   `json:"name"`
 	QueenBeeBornDate   *string  `json:"queen_bee_born_date"`
