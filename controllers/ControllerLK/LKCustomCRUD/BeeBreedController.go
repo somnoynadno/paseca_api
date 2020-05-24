@@ -2,9 +2,9 @@ package LKCustomCRUD
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -75,17 +75,17 @@ var DeleteBeeBreedByID = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if entity.CreatorID != &userID {
+	if *entity.CreatorID != userID {
 		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
 		return
 	}
 
-	res, err := json.Marshal(entity)
+	err = db.Delete(&entity).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		u.RespondJSON(w, res)
+		u.Respond(w, u.Message(true, "OK"))
 	}
 }
 

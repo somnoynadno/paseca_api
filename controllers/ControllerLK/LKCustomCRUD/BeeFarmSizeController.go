@@ -75,16 +75,16 @@ var DeleteBeeFarmSizeByID = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if entity.CreatorID != &userID {
+	if *entity.CreatorID != userID {
 		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
 		return
 	}
 
-	res, err := json.Marshal(entity)
+	err = db.Delete(&entity).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		u.RespondJSON(w, res)
+		u.Respond(w, u.Message(true, "OK"))
 	}
 }
