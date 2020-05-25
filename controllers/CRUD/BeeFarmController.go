@@ -90,7 +90,7 @@ var BeeFarmUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newBeeFarm.User = models.User{}
+	newBeeFarm.User = BeeFarm.User
 	newBeeFarm.BeeFarmType = models.BeeFarmType{}
 	newBeeFarm.BeeFarmSize = models.BeeFarmSize{}
 

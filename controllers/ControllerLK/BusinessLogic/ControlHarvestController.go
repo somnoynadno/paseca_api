@@ -55,8 +55,9 @@ var CreateControlHarvest = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Model := models.ControlHarvest{UserID: id, Amount: EditModel.Amount,
+	Model := models.ControlHarvest{Amount: EditModel.Amount,
 		BeeFamilyID: EditModel.BeeFamilyID, Date: &t}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

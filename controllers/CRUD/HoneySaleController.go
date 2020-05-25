@@ -88,8 +88,7 @@ var HoneySaleUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newHoneySale.HoneyType = models.HoneyType{}
-	newHoneySale.BeeFarm = models.BeeFarm{}
+	newHoneySale.HoneyType = HoneySale.HoneyType
 
 	err = db.Model(&HoneySale).Updates(newHoneySale).Error
 

@@ -57,9 +57,10 @@ var CreateHoneyHarvest = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: predict total price based on honey type and amount
-	Model := models.HoneyHarvest{UserID: id, Amount: EditModel.Amount,
+	Model := models.HoneyHarvest{Amount: EditModel.Amount,
 		TotalPrice: 0, HoneyTypeID: EditModel.HoneyTypeID,
 		BeeFamilyID: EditModel.BeeFamilyID, Date: &t}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

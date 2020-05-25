@@ -87,9 +87,7 @@ var HoneyHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// do NOT update recursively
-	newHoneyHarvest.HoneyType = models.HoneyType{}
-	newHoneyHarvest.BeeFamily = models.BeeFamily{}
+	newHoneyHarvest.HoneyType = HoneyHarvest.HoneyType
 
 	err = db.Model(&HoneyHarvest).Updates(newHoneyHarvest).Error
 

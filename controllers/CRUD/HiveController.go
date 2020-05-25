@@ -89,9 +89,8 @@ var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newHive.HiveFormat = models.HiveFormat{}
-	newHive.HiveFrameType = models.HiveFrameType{}
-	newHive.BeeFarm = models.BeeFarm{}
+	newHive.HiveFormat = Hive.HiveFormat
+	newHive.HiveFrameType = Hive.HiveFrameType
 
 	err = db.Model(&Hive).Updates(newHive).Error
 

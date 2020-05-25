@@ -28,8 +28,9 @@ var CreateHive = func(w http.ResponseWriter, r *http.Request) {
 
 	Model := models.Hive{BeeFarmID: CreateModel.BeeFarmID,
 		Name: CreateModel.Name, HiveFormatID: CreateModel.HiveFormatID,
-		HiveFrameTypeID: CreateModel.HiveFrameTypeID, UserID: id,
+		HiveFrameTypeID: CreateModel.HiveFrameTypeID,
 	}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

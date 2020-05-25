@@ -57,9 +57,10 @@ var CreateHoneySale = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Model := models.HoneySale{UserID: id, Amount: EditModel.Amount,
+	Model := models.HoneySale{Amount: EditModel.Amount,
 		TotalPrice: EditModel.TotalPrice, HoneyTypeID: EditModel.HoneyTypeID,
 		BeeFarmID: EditModel.BeeFarmID, Date: &t}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

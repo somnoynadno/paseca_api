@@ -85,9 +85,10 @@ var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := u.GetUserIDFromRequest(r)
-	Model := models.BeeFarm{UserID: id, Location: EditModel.Location,
+	Model := models.BeeFarm{Location: EditModel.Location,
 		Name: EditModel.Name, BeeFarmTypeID: EditModel.BeeFarmTypeID,
 		BeeFarmSizeID: EditModel.BeeFarmSizeID}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

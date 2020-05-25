@@ -9,19 +9,18 @@ import (
 )
 
 var GetUser = func(w http.ResponseWriter, r *http.Request) {
-	var entities models.User
+	var user models.User
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionType").Preload("SubscriptionStatus").
-		Where("id = ?", id).Find(&entities).Error
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").First(&user, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	res, err := json.Marshal(entities)
+	res, err := json.Marshal(user)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

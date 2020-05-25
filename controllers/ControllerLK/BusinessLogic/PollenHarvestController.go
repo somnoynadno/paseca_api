@@ -55,8 +55,9 @@ var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Model := models.PollenHarvest{UserID: id, Amount: EditModel.Amount,
+	Model := models.PollenHarvest{Amount: EditModel.Amount,
 		BeeFarmID: EditModel.BeeFarmID, Date: &t}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error

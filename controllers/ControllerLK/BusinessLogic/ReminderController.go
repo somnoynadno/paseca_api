@@ -2,6 +2,8 @@ package BusinessLogic
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -16,7 +18,7 @@ type ReminderCreateModel struct {
 	BeeFarmID uint    `json:"bee_farm_id"`
 }
 
-var CreateReminder= func(w http.ResponseWriter, r *http.Request) {
+var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
 	CreateModel := &ReminderCreateModel{}
 
 	err := json.NewDecoder(r.Body).Decode(CreateModel)
@@ -33,6 +35,34 @@ var CreateReminder= func(w http.ResponseWriter, r *http.Request) {
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
+	}
+}
+
+var CheckReminder = func(w http.ResponseWriter, r *http.Request) {
+	var reminder models.Reminder
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	db := db.GetDB()
+	err := db.First(&reminder, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	reminder.IsChecked = !reminder.IsChecked
+	err = db.Save(&reminder).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
