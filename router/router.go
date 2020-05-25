@@ -172,6 +172,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/bee_farms", BusinessLogic.GetUsersBeeFarms).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm/{id}", BusinessLogic.GetBeeFarmByID).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm", BusinessLogic.CreateBeeFarm).Methods("POST")
+	router.HandleFunc("/api/lk/bee_farm/{id}", BusinessLogic.DeleteBeeFarm).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_farm_sizes", LKCustomCRUD.GetBeeFarmSizes).Methods("GET")
 	router.HandleFunc("/api/lk/bee_farm_size", LKCustomCRUD.BeeFarmSizeCreate).Methods("POST")
@@ -183,6 +184,7 @@ func InitRouter() *mux.Router {
 
 	router.HandleFunc("/api/lk/control_harvests", BusinessLogic.GetUsersControlHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/control_harvest", BusinessLogic.CreateControlHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/control_harvest/{id}", BusinessLogic.DeleteControlHarvest).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/hives", BusinessLogic.GetUsersFreeHives).Methods("GET")
 	router.HandleFunc("/api/lk/hive", BusinessLogic.CreateHive).Methods("POST")
@@ -200,9 +202,11 @@ func InitRouter() *mux.Router {
 
 	router.HandleFunc("/api/lk/honey_harvests", BusinessLogic.GetUsersHoneyHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/honey_harvest", BusinessLogic.CreateHoneyHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/honey_harvest/{id}", BusinessLogic.CreateHoneyHarvest).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/honey_sales", BusinessLogic.GetUsersHoneySales).Methods("GET")
 	router.HandleFunc("/api/lk/honey_sale", BusinessLogic.CreateHoneySale).Methods("POST")
+	router.HandleFunc("/api/lk/honey_sale/{id}", BusinessLogic.DeleteHoneySale).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/honey_types", LKCustomCRUD.GetHoneyTypes).Methods("GET")
 	router.HandleFunc("/api/lk/honey_type", LKCustomCRUD.HoneyTypeCreate).Methods("POST")
@@ -212,11 +216,11 @@ func InitRouter() *mux.Router {
 
 	router.HandleFunc("/api/lk/pollen_harvests", BusinessLogic.GetUsersPollenHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/pollen_harvest", BusinessLogic.CreatePollenHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/pollen_harvest/{id}", BusinessLogic.DeletePollenHarvest).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/reminder", BusinessLogic.CreateReminder).Methods("POST")
-	router.HandleFunc("/api/lk/reminder", BusinessLogic.DeleteReminder).Methods("DELETE")
-	router.HandleFunc("/api/lk/check_reminder/{id}", BusinessLogic.CheckReminder).Methods("DELETE")
-
+	router.HandleFunc("/api/lk/reminder/{id}", BusinessLogic.DeleteReminder).Methods("DELETE")
+	router.HandleFunc("/api/lk/check_reminder/{id}", BusinessLogic.CheckReminder).Methods("POST")
 
 	router.HandleFunc("/api/lk/user", BusinessLogic.GetUser).Methods("GET")
 
