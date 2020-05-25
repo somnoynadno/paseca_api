@@ -2,6 +2,7 @@ package BusinessLogic
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -44,13 +45,14 @@ var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
 }
 
 var CheckReminder = func(w http.ResponseWriter, r *http.Request) {
-	var reminder models.Reminder
+	var model models.Reminder
 
 	params := mux.Vars(r)
 	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
 
 	db := db.GetDB()
-	err := db.First(&reminder, id).Error
+	err := db.First(&model, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -61,8 +63,46 @@ var CheckReminder = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reminder.IsChecked = !reminder.IsChecked
-	err = db.Save(&reminder).Error
+	if model.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	model.IsChecked = !model.IsChecked
+	err = db.Save(&model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
+	}
+}
+
+var DeleteReminder = func(w http.ResponseWriter, r *http.Request) {
+	var model models.Reminder
+
+	params := mux.Vars(r)
+	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
+
+	db := db.GetDB()
+	err := db.First(&model, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	if model.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	err = db.Delete(&model).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

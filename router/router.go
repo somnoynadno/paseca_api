@@ -163,6 +163,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/bee_families_without_hives", BusinessLogic.GetUsersBeeFamiliesWithoutHives).Methods("GET")
 	router.HandleFunc("/api/lk/bee_family/{id}", BusinessLogic.GetBeeFamilyByID).Methods("GET")
 	router.HandleFunc("/api/lk/bee_family", BusinessLogic.CreateBeeFamily).Methods("POST")
+	router.HandleFunc("/api/lk/bee_family/{id}", BusinessLogic.DeleteBeeFamily).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.GetBeeFamilyStatuses).Methods("GET")
 	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.BeeFamilyStatusCreate).Methods("POST")
@@ -185,6 +186,7 @@ func InitRouter() *mux.Router {
 
 	router.HandleFunc("/api/lk/hives", BusinessLogic.GetUsersFreeHives).Methods("GET")
 	router.HandleFunc("/api/lk/hive", BusinessLogic.CreateHive).Methods("POST")
+	router.HandleFunc("/api/lk/hive/{id}", BusinessLogic.DeleteHive).Methods("DELETE")
 	router.HandleFunc("/api/lk/hive/set_coords", BusinessLogic.SetHiveCoords).Methods("POST")
 	router.HandleFunc("/api/lk/hive/set_hive_bee_family", BusinessLogic.SetHiveBeeFamily).Methods("POST")
 
@@ -212,6 +214,9 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/lk/pollen_harvest", BusinessLogic.CreatePollenHarvest).Methods("POST")
 
 	router.HandleFunc("/api/lk/reminder", BusinessLogic.CreateReminder).Methods("POST")
+	router.HandleFunc("/api/lk/reminder", BusinessLogic.DeleteReminder).Methods("DELETE")
+	router.HandleFunc("/api/lk/check_reminder/{id}", BusinessLogic.CheckReminder).Methods("DELETE")
+
 
 	router.HandleFunc("/api/lk/user", BusinessLogic.GetUser).Methods("GET")
 
