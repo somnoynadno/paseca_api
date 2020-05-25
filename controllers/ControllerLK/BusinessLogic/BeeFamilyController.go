@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -107,6 +108,7 @@ var CreateBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 		Parent1ID: CreateModel.Parent1ID, Parent2ID: CreateModel.Parent2ID,
 		IsControl: CreateModel.IsControl, BeeFamilyStatusID: CreateModel.BeeFamilyStatusID,
 	}
+	Model.UserID = u.GetUserIDFromRequest(r)
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error
@@ -153,6 +155,9 @@ var DeleteBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 
 	db := db.GetDB()
 	err := db.First(&model, id).Error
+
+	log.Debug(userID)
+	log.Debug(model.UserID)
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

@@ -33,6 +33,7 @@ var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
 	Model := models.Reminder{BeeFarmID: CreateModel.BeeFarmID,
 		Title: CreateModel.Title, Text: CreateModel.Text, Date: date,
 	}
+	Model.UserID = u.GetUserIDFromRequest(r)
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error
