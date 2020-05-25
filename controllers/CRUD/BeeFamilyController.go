@@ -91,9 +91,9 @@ var BeeFamilyUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newBeeFamily.BeeFarm = models.BeeFarm{}
-	newBeeFamily.BeeBreed = models.BeeBreed{}
-	newBeeFamily.BeeFamilyStatus = models.BeeFamilyStatus{}
+	newBeeFamily.BeeFarm = BeeFamily.BeeFarm
+	newBeeFamily.BeeBreed = BeeFamily.BeeBreed
+	newBeeFamily.BeeFamilyStatus = BeeFamily.BeeFamilyStatus
 	newBeeFamily.Hive = BeeFamily.Hive
 	newBeeFamily.Parent1 = BeeFamily.Parent1
 	newBeeFamily.Parent2 = BeeFamily.Parent2

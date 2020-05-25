@@ -11,8 +11,8 @@ type User struct {
 	IsAdmin              bool               `json:"is_admin" gorm:"not null; default:false;"`
 	SubscriptionEnd      *time.Time         `json:"subscription_end"`
 	SubscriptionStatusID uint               `json:"subscription_status_id"`
-	SubscriptionStatus   SubscriptionStatus `json:"subscription_status"`
+	SubscriptionStatus   SubscriptionStatus `json:"subscription_status,omitempty"`
 	SubscriptionTypeID   uint               `json:"subscription_type_id"`
-	SubscriptionType     SubscriptionType   `json:"subscription_type"`
-	BeeFarms             []BeeFarm          `json:"bee_farms"`
+	SubscriptionType     SubscriptionType   `json:"subscription_type,omitempty"`
+	BeeFarms             []BeeFarm          `json:"bee_farms,omitempty"`
 }

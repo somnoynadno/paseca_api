@@ -1,8 +1,10 @@
-package ControllerLK
+package BusinessLogic
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
@@ -11,12 +13,12 @@ import (
 
 type BeeFarm struct {
 	models.BaseModel
-	Name          string       `json:"name"`
-	Location      *string      `json:"location"`
-	BeeFarmTypeID uint         `json:"bee_farm_type_id"`
-	BeeFarmType   BeeFarmType  `json:"bee_farm_type"`
-	BeeFarmSizeID uint         `json:"bee_farm_size_id"`
-	BeeFarmSize   BeeFarmSize  `json:"bee_farm_size"`
+	Name          string             `json:"name"`
+	Location      *string            `json:"location"`
+	BeeFarmTypeID uint               `json:"bee_farm_type_id"`
+	BeeFarmType   models.BeeFarmType `json:"bee_farm_type"`
+	BeeFarmSizeID uint               `json:"bee_farm_size_id"`
+	BeeFarmSize   models.BeeFarmSize `json:"bee_farm_size"`
 }
 
 type BeeFarmEditModel struct {
@@ -85,9 +87,10 @@ var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := u.GetUserIDFromRequest(r)
-	Model := models.BeeFarm{UserID: id, Location: EditModel.Location,
+	Model := models.BeeFarm{Location: EditModel.Location,
 		Name: EditModel.Name, BeeFarmTypeID: EditModel.BeeFarmTypeID,
 		BeeFarmSizeID: EditModel.BeeFarmSizeID}
+	Model.UserID = id
 
 	db := db.GetDB()
 	err = db.Create(&Model).Error
@@ -99,5 +102,35 @@ var CreateBeeFarm = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var DeleteBeeFarm = func(w http.ResponseWriter, r *http.Request) {
+	var model models.BeeFarm
 
+	params := mux.Vars(r)
+	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
 
+	db := db.GetDB()
+	err := db.First(&model, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	if model.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	err = db.Delete(&model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
+	}
+}

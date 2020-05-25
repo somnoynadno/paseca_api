@@ -87,9 +87,6 @@ var ControlHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// do NOT update recursively
-	newControlHarvest.BeeFamily = models.BeeFamily{}
-
 	err = db.Model(&ControlHarvest).Updates(newControlHarvest).Error
 
 	if err != nil {

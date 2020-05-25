@@ -4,7 +4,9 @@ import (
 	"github.com/gorilla/mux"
 	"paseca/controllers/AuthController"
 	"paseca/controllers/CRUD"
-	"paseca/controllers/ControllerLK"
+	"paseca/controllers/ControllerLK/BusinessLogic"
+	"paseca/controllers/ControllerLK/LKCustomCRUD"
+	"paseca/controllers/ControllerLK/OtherControllers"
 	"paseca/middleware"
 	u "paseca/utils"
 )
@@ -16,6 +18,7 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/{any}", u.HandleOptions).Methods("OPTIONS")
 	router.HandleFunc("/api/{any1}/{any2}", u.HandleOptions).Methods("OPTIONS")
 	router.HandleFunc("/api/{any1}/{any2}/{any3}", u.HandleOptions).Methods("OPTIONS")
+	router.HandleFunc("/api/{any1}/{any2}/{any3}/{any4}", u.HandleOptions).Methods("OPTIONS")
 
 	// ADMIN CRUD
 	router.HandleFunc("/api/admin/bee_breed", CRUD.BeeBreedQuery).Methods("GET")
@@ -148,31 +151,78 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/auth/login", AuthController.Authenticate).Methods("POST")
 
 	// LK PATHS
-	router.HandleFunc("/api/lk/news", ControllerLK.GetLastNews).Methods("GET")
-	router.HandleFunc("/api/lk/bee_farm_types", ControllerLK.GetBeeFarmTypes).Methods("GET")
-	router.HandleFunc("/api/lk/bee_breeds", ControllerLK.GetBeeBreeds).Methods("GET")
-	router.HandleFunc("/api/lk/pollen_harvests", ControllerLK.GetUsersPollenHarvests).Methods("GET")
-	router.HandleFunc("/api/lk/control_harvests", ControllerLK.GetUsersControlHarvests).Methods("GET")
-	router.HandleFunc("/api/lk/bee_family_statuses", ControllerLK.GetBeeFamilyStatuses).Methods("GET")
-	router.HandleFunc("/api/lk/honey_harvests", ControllerLK.GetUsersHoneyHarvests).Methods("GET")
-	router.HandleFunc("/api/lk/honey_sales", ControllerLK.GetUsersHoneySales).Methods("GET")
-	router.HandleFunc("/api/lk/bee_farm_sizes", ControllerLK.GetBeeFarmSizes).Methods("GET")
-	router.HandleFunc("/api/lk/bee_farms", ControllerLK.GetUsersBeeFarms).Methods("GET")
-	router.HandleFunc("/api/lk/bee_farm/{id}", ControllerLK.GetBeeFarmByID).Methods("GET")
-	router.HandleFunc("/api/lk/user", ControllerLK.GetUser).Methods("GET")
-	router.HandleFunc("/api/lk/honey_types", ControllerLK.GetHoneyTypes).Methods("GET")
-	router.HandleFunc("/api/lk/bee_families", ControllerLK.GetUsersBeeFamilies).Methods("GET")
-	router.HandleFunc("/api/lk/hive_frame_types", ControllerLK.GetHiveFrameTypes).Methods("GET")
-	router.HandleFunc("/api/lk/hive_formats", ControllerLK.GetHiveFormats).Methods("GET")
+	router.HandleFunc("/api/lk/bee_breeds", LKCustomCRUD.GetBeeBreeds).Methods("GET")
+	router.HandleFunc("/api/lk/bee_breed", LKCustomCRUD.BeeBreedCreate).Methods("POST")
+	router.HandleFunc("/api/lk/bee_breed/{id}", LKCustomCRUD.DeleteBeeBreedByID).Methods("DELETE")
 
-	router.HandleFunc("/api/lk/bee_farm", ControllerLK.CreateBeeFarm).Methods("POST")
-	router.HandleFunc("/api/lk/bee_family", ControllerLK.CreateBeeFamily).Methods("POST")
-	router.HandleFunc("/api/lk/honey_harvest", ControllerLK.CreateHoneyHarvest).Methods("POST")
-	router.HandleFunc("/api/lk/honey_sale", ControllerLK.CreateHoneySale).Methods("POST")
-	router.HandleFunc("/api/lk/reminder", ControllerLK.CreateReminder).Methods("POST")
-	router.HandleFunc("/api/lk/hive", ControllerLK.CreateHive).Methods("POST")
-	router.HandleFunc("/api/lk/control_harvest", ControllerLK.CreateControlHarvest).Methods("POST")
-	router.HandleFunc("/api/lk/pollen_harvest", ControllerLK.CreatePollenHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/bee_diseases", LKCustomCRUD.GetBeeDiseases).Methods("GET")
+	router.HandleFunc("/api/lk/bee_disease", LKCustomCRUD.BeeDiseaseCreate).Methods("POST")
+	router.HandleFunc("/api/lk/bee_disease/{id}", LKCustomCRUD.DeleteBeeDiseaseByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/bee_families", BusinessLogic.GetUsersBeeFamilies).Methods("GET")
+	router.HandleFunc("/api/lk/bee_families_without_hives", BusinessLogic.GetUsersBeeFamiliesWithoutHives).Methods("GET")
+	router.HandleFunc("/api/lk/bee_family/{id}", BusinessLogic.GetBeeFamilyByID).Methods("GET")
+	router.HandleFunc("/api/lk/bee_family", BusinessLogic.CreateBeeFamily).Methods("POST")
+	router.HandleFunc("/api/lk/bee_family/{id}", BusinessLogic.DeleteBeeFamily).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.GetBeeFamilyStatuses).Methods("GET")
+	router.HandleFunc("/api/lk/bee_family_statuses", LKCustomCRUD.BeeFamilyStatusCreate).Methods("POST")
+	router.HandleFunc("/api/lk/bee_family_status/{id}", LKCustomCRUD.DeleteBeeFamilyStatusByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/bee_farms", BusinessLogic.GetUsersBeeFarms).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm/{id}", BusinessLogic.GetBeeFarmByID).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm", BusinessLogic.CreateBeeFarm).Methods("POST")
+	router.HandleFunc("/api/lk/bee_farm/{id}", BusinessLogic.DeleteBeeFarm).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/bee_farm_sizes", LKCustomCRUD.GetBeeFarmSizes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_size", LKCustomCRUD.BeeFarmSizeCreate).Methods("POST")
+	router.HandleFunc("/api/lk/bee_farm_size/{id}", LKCustomCRUD.DeleteBeeFarmSizeByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/bee_farm_types", LKCustomCRUD.GetBeeFarmTypes).Methods("GET")
+	router.HandleFunc("/api/lk/bee_farm_type", LKCustomCRUD.BeeFarmTypeCreate).Methods("POST")
+	router.HandleFunc("/api/lk/bee_farm_type/{id}", LKCustomCRUD.DeleteBeeFarmTypeByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/control_harvests", BusinessLogic.GetUsersControlHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/control_harvest", BusinessLogic.CreateControlHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/control_harvest/{id}", BusinessLogic.DeleteControlHarvest).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/hives", BusinessLogic.GetUsersFreeHives).Methods("GET")
+	router.HandleFunc("/api/lk/hive", BusinessLogic.CreateHive).Methods("POST")
+	router.HandleFunc("/api/lk/hive/{id}", BusinessLogic.DeleteHive).Methods("DELETE")
+	router.HandleFunc("/api/lk/hive/set_coords", BusinessLogic.SetHiveCoords).Methods("POST")
+	router.HandleFunc("/api/lk/hive/set_hive_bee_family", BusinessLogic.SetHiveBeeFamily).Methods("POST")
+
+	router.HandleFunc("/api/lk/hive_formats", LKCustomCRUD.GetHiveFormats).Methods("GET")
+	router.HandleFunc("/api/lk/hive_format", LKCustomCRUD.HiveFormatCreate).Methods("POST")
+	router.HandleFunc("/api/lk/hive_format/{id}", LKCustomCRUD.DeleteHiveFormatByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/hive_frame_types", LKCustomCRUD.GetHiveFrameTypes).Methods("GET")
+	router.HandleFunc("/api/lk/hive_frame_type", LKCustomCRUD.HiveFrameTypeCreate).Methods("POST")
+	router.HandleFunc("/api/lk/hive_frame_type/{id}", LKCustomCRUD.DeleteHiveFrameTypeByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/honey_harvests", BusinessLogic.GetUsersHoneyHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/honey_harvest", BusinessLogic.CreateHoneyHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/honey_harvest/{id}", BusinessLogic.CreateHoneyHarvest).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/honey_sales", BusinessLogic.GetUsersHoneySales).Methods("GET")
+	router.HandleFunc("/api/lk/honey_sale", BusinessLogic.CreateHoneySale).Methods("POST")
+	router.HandleFunc("/api/lk/honey_sale/{id}", BusinessLogic.DeleteHoneySale).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/honey_types", LKCustomCRUD.GetHoneyTypes).Methods("GET")
+	router.HandleFunc("/api/lk/honey_type", LKCustomCRUD.HoneyTypeCreate).Methods("POST")
+	router.HandleFunc("/api/lk/honey_type/{id}", LKCustomCRUD.DeleteHoneyTypeByID).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/news", OtherControllers.GetLastNews).Methods("GET")
+
+	router.HandleFunc("/api/lk/pollen_harvests", BusinessLogic.GetUsersPollenHarvests).Methods("GET")
+	router.HandleFunc("/api/lk/pollen_harvest", BusinessLogic.CreatePollenHarvest).Methods("POST")
+	router.HandleFunc("/api/lk/pollen_harvest/{id}", BusinessLogic.DeletePollenHarvest).Methods("DELETE")
+
+	router.HandleFunc("/api/lk/reminder", BusinessLogic.CreateReminder).Methods("POST")
+	router.HandleFunc("/api/lk/reminder/{id}", BusinessLogic.DeleteReminder).Methods("DELETE")
+	router.HandleFunc("/api/lk/check_reminder/{id}", BusinessLogic.CheckReminder).Methods("POST")
+
+	router.HandleFunc("/api/lk/user", BusinessLogic.GetUser).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order

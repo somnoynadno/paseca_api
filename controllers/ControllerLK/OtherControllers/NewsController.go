@@ -1,4 +1,4 @@
-package ControllerLK
+package OtherControllers
 
 import (
 	"encoding/json"
@@ -8,12 +8,11 @@ import (
 	u "paseca/utils"
 )
 
-var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFormat
-	id := r.Context().Value("context").(u.Values).Get("user_id")
+var GetLastNews = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.News
 
 	db := db.GetDB()
-	err := db.Where("is_custom = false or (is_custom = true and creator_id = ?)", id).Find(&entities).Error
+	err := db.Order("updated_at desc").Limit(10).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

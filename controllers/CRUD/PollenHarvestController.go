@@ -87,9 +87,6 @@ var PollenHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// do NOT update recursively
-	newPollenHarvest.BeeFarm = models.BeeFarm{}
-
 	err = db.Model(&PollenHarvest).Updates(newPollenHarvest).Error
 
 	if err != nil {

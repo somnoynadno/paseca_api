@@ -87,9 +87,6 @@ var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// do NOT update recursively
-	newReminder.BeeFarm = models.BeeFarm{}
-
 	err = db.Model(&Reminder).Updates(newReminder).Error
 
 	if err != nil {

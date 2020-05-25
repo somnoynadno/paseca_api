@@ -1,4 +1,4 @@
-package ControllerLK
+package BusinessLogic
 
 import (
 	"encoding/json"
@@ -8,19 +8,19 @@ import (
 	u "paseca/utils"
 )
 
-var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFamilyStatus
+var GetUser = func(w http.ResponseWriter, r *http.Request) {
+	var user models.User
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
-	err := db.Where("is_custom = false or (is_custom = true and creator_id = ?)", id).Find(&entities).Error
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").First(&user, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	res, err := json.Marshal(entities)
+	res, err := json.Marshal(user)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -28,4 +28,3 @@ var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
-
