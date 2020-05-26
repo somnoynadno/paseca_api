@@ -3,12 +3,14 @@ package BusinessLogic
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
+	"strconv"
 	"time"
 )
 
@@ -18,15 +20,24 @@ type PollenHarvestEditModel struct {
 	Date          string  `json:"date"`
 }
 
-// TODO: add order by on different columns
-// TODO: add pagination
 var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
 	var entities []models.PollenHarvest
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
+	order := r.FormValue("_order")
+	sort := r.FormValue("_sort")
+	end, err1 := strconv.Atoi(r.FormValue("_end"))
+	start, err2 := strconv.Atoi(r.FormValue("_start"))
+
+	if err1 != nil || err2 != nil {
+		u.HandleBadRequest(w, errors.New("bad _start or _end parameter value"))
+		return
+	}
+	u.CheckOrderAndSortParams(&order, &sort)
+
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").
-		Where("user_id = ?", id).Order("date desc").Find(&entities).Error
+	err := db.Preload("BeeFarm").Where("user_id = ?", id).
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end - start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -38,6 +49,9 @@ var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
+		var count string
+		db.Model(&models.PollenHarvest{}).Where("user_id = ?", id).Count(&count)
+		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}
 }
