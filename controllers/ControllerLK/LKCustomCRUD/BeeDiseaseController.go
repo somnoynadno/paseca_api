@@ -75,7 +75,7 @@ var DeleteBeeDiseaseByID = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if *entity.CreatorID != userID {
+	if entity.CreatorID == nil || *entity.CreatorID != userID {
 		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
 		return
 	}

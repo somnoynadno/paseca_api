@@ -202,7 +202,7 @@ func InitRouter() *mux.Router {
 
 	router.HandleFunc("/api/lk/honey_harvests", BusinessLogic.GetUsersHoneyHarvests).Methods("GET")
 	router.HandleFunc("/api/lk/honey_harvest", BusinessLogic.CreateHoneyHarvest).Methods("POST")
-	router.HandleFunc("/api/lk/honey_harvest/{id}", BusinessLogic.CreateHoneyHarvest).Methods("DELETE")
+	router.HandleFunc("/api/lk/honey_harvest/{id}", BusinessLogic.DeleteHoneyHarvest).Methods("DELETE")
 
 	router.HandleFunc("/api/lk/honey_sales", BusinessLogic.GetUsersHoneySales).Methods("GET")
 	router.HandleFunc("/api/lk/honey_sale", BusinessLogic.CreateHoneySale).Methods("POST")
