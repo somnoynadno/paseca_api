@@ -28,7 +28,7 @@ var GetUsersBeeFamilies = func(w http.ResponseWriter, r *http.Request) {
 		Joins("join bee_farms on bee_farms.id = bee_families.bee_farm_id").
 		Joins("join users on users.id = bee_farms.user_id").
 		Select("bee_families.id, bee_families.name, bee_farms.name as bee_farm_name").
-		Where("users.id = ?", id).Scan(&entities).Error
+		Where("users.id = ? and bee_families.deleted_at is null", id).Scan(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -53,7 +53,8 @@ var GetUsersBeeFamiliesWithoutHives = func(w http.ResponseWriter, r *http.Reques
 		Joins("join bee_farms on bee_farms.id = bee_families.bee_farm_id").
 		Joins("join users on users.id = bee_farms.user_id").
 		Select("bee_families.id, bee_families.name, bee_farms.name as bee_farm_name").
-		Where("users.id = ? and bee_families.hive_id is null", id).Scan(&entities).Error
+		Where("users.id = ? and bee_families.hive_id is null and bee_families.deleted_at is null", id).
+		Scan(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
