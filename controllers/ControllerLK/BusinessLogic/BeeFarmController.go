@@ -58,7 +58,7 @@ var GetBeeFarmByID = func(w http.ResponseWriter, r *http.Request) {
 
 	db := db.GetDB()
 	err := db.Preload("Reminders").Preload("BeeFamilies").Preload("BeeFarmSize").
-		Preload("BeeFarmType").Preload("Hives").
+		Preload("BeeFarmType").Preload("Hives").Preload("BeeFamilies.Swarms").
 		Preload("BeeFamilies.BeeFamilyStatus").Preload("BeeFamilies.Hive").
 		Preload("Hives.HiveFrameType").Preload("Hives.HiveFormat").
 		Where("id = ?", id).Find(&BeeFarm).Error

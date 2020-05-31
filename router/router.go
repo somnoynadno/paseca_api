@@ -141,6 +141,18 @@ func InitRouter() *mux.Router {
 	router.HandleFunc("/api/admin/subscription_type/{id}", CRUD.SubscriptionTypeUpdate).Methods("PUT")
 	router.HandleFunc("/api/admin/subscription_type/{id}", CRUD.SubscriptionTypeDelete).Methods("DELETE")
 
+	router.HandleFunc("/api/admin/swarm", CRUD.SwarmQuery).Methods("GET")
+	router.HandleFunc("/api/admin/swarm", CRUD.SwarmCreate).Methods("POST")
+	router.HandleFunc("/api/admin/swarm/{id}", CRUD.SwarmRetrieve).Methods("GET")
+	router.HandleFunc("/api/admin/swarm/{id}", CRUD.SwarmUpdate).Methods("PUT")
+	router.HandleFunc("/api/admin/swarm/{id}", CRUD.SwarmDelete).Methods("DELETE")
+
+	router.HandleFunc("/api/admin/swarm_status", CRUD.SwarmStatusQuery).Methods("GET")
+	router.HandleFunc("/api/admin/swarm_status", CRUD.SwarmStatusCreate).Methods("POST")
+	router.HandleFunc("/api/admin/swarm_status/{id}", CRUD.SwarmStatusRetrieve).Methods("GET")
+	router.HandleFunc("/api/admin/swarm_status/{id}", CRUD.SwarmStatusUpdate).Methods("PUT")
+	router.HandleFunc("/api/admin/swarm_status/{id}", CRUD.SwarmStatusDelete).Methods("DELETE")
+
 	router.HandleFunc("/api/admin/user", CRUD.UserQuery).Methods("GET")
 	router.HandleFunc("/api/admin/user", CRUD.UserCreate).Methods("POST")
 	router.HandleFunc("/api/admin/user/{id}", CRUD.UserRetrieve).Methods("GET")
