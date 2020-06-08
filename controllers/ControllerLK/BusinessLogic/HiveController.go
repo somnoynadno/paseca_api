@@ -45,9 +45,10 @@ var CreateHive = func(w http.ResponseWriter, r *http.Request) {
 }
 
 type HiveCoords struct {
-	CoordX *int `json:"coord_x"`
-	CoordY *int `json:"coord_y"`
-	HiveID uint `json:"hive_id"`
+	CoordX    *int `json:"coord_x"`
+	CoordY    *int `json:"coord_y"`
+	BeeFarmID uint `json:"bee_farm_id"`
+	HiveID    uint `json:"hive_id"`
 }
 
 var SetHiveCoords = func(w http.ResponseWriter, r *http.Request) {
@@ -75,6 +76,7 @@ var SetHiveCoords = func(w http.ResponseWriter, r *http.Request) {
 
 	Hive.CoordX = coords.CoordX
 	Hive.CoordY = coords.CoordY
+	Hive.BeeFarmID = coords.BeeFarmID
 
 	err = db.Save(&Hive).Error
 
@@ -212,7 +214,9 @@ var GetUsersFreeHives = func(w http.ResponseWriter, r *http.Request) {
 		Select("hives.id, hives.name, bee_farms.name as bee_farm_name, " +
 			"hive_frame_types.name as hive_frame_type_name, hive_formats.name as hive_format_name, " +
 			"hive_formats.size as hive_format_size").
-		Where("hives.user_id = ? and hives.coord_x is null and hives.coord_y is null", id).Scan(&entities).Error
+		Where("hives.user_id = ? and hives.coord_x is null " +
+			"and hives.coord_y is null and hives.deleted_at is null", id).
+		Scan(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

@@ -47,18 +47,6 @@ func GetTokenFromHeader(r *http.Request) (*auxiliary.Token, error) {
 
 var JwtAuthentication = func(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// do NOT auth on OPTIONS
-		if r.Method == "OPTIONS" {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		// check if request does not need authentication, serve the request if it doesn't need it
-		if strings.HasPrefix(r.URL.Path, "/api/auth") {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		tk, err := GetTokenFromHeader(r)
 		if err != nil {
 			u.HandleUnauthorized(w, errors.New("missing auth token"))

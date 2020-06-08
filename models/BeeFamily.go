@@ -23,4 +23,5 @@ type BeeFamily struct {
 	Parent2            *BeeFamily        `json:"parent2,omitempty"`
 	IsControl          bool              `json:"is_control" gorm:"default:false; not null;"`
 	ControlHarvests    []*ControlHarvest `json:"control_harvests,omitempty"`
+	Swarms             []Swarm           `json:"swarms,omitempty"`
 }

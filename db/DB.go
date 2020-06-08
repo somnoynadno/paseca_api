@@ -49,7 +49,10 @@ func init() {
 		models.Reminder{},
 		models.SubscriptionStatus{},
 		models.SubscriptionType{},
-		models.User{})
+		models.Swarm{},
+		models.SwarmStatus{},
+		models.User{},
+		)
 }
 
 func GetDB() *gorm.DB {
