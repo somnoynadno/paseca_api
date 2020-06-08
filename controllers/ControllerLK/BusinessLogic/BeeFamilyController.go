@@ -10,7 +10,7 @@ import (
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
-	. "time"
+	"time"
 )
 
 type BeeFamilyShort struct {
@@ -91,15 +91,15 @@ var CreateBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var queenBeeBornDate *Time
-	var lastInspectionDate *Time
+	var queenBeeBornDate *time.Time
+	var lastInspectionDate *time.Time
 
 	if CreateModel.QueenBeeBornDate != nil {
-		t, _ := Parse("2006-01-02", *CreateModel.QueenBeeBornDate)
+		t, _ := time.Parse("2006-01-02", *CreateModel.QueenBeeBornDate)
 		queenBeeBornDate = &t
 	}
 	if CreateModel.LastInspectionDate != nil {
-		t, _ := Parse("2006-01-02", *CreateModel.LastInspectionDate)
+		t, _ := time.Parse("2006-01-02", *CreateModel.LastInspectionDate)
 		lastInspectionDate = &t
 	}
 
@@ -175,6 +175,39 @@ var DeleteBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = db.Delete(&model).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
+	}
+}
+
+var DoBeeFamilyInspection = func(w http.ResponseWriter, r *http.Request) {
+	var model models.BeeFamily
+
+	params := mux.Vars(r)
+	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
+
+	db := db.GetDB()
+	err := db.First(&model, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	if model.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	err = db.Model(&model).Update("LastInspectionDate", time.Now()).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)

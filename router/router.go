@@ -184,6 +184,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_family/{id}", BusinessLogic.GetBeeFamilyByID).Methods("GET")
 	lk.HandleFunc("/bee_family", BusinessLogic.CreateBeeFamily).Methods("POST")
 	lk.HandleFunc("/bee_family/{id}", BusinessLogic.DeleteBeeFamily).Methods("DELETE")
+	lk.HandleFunc("/do_bee_family_inspection/{id}", BusinessLogic.DoBeeFamilyInspection).Methods("POST")
 
 	lk.HandleFunc("/bee_family_statuses", LKCustomCRUD.GetBeeFamilyStatuses).Methods("GET")
 	lk.HandleFunc("/bee_family_statuses", LKCustomCRUD.BeeFamilyStatusCreate).Methods("POST")
