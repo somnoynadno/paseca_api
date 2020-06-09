@@ -194,6 +194,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_farm/{id}", BusinessLogic.GetBeeFarmByID).Methods("GET")
 	lk.HandleFunc("/bee_farm", BusinessLogic.CreateBeeFarm).Methods("POST")
 	lk.HandleFunc("/bee_farm/{id}", BusinessLogic.DeleteBeeFarm).Methods("DELETE")
+	lk.HandleFunc("/bee_farm/{id}", BusinessLogic.EditBeeFarm).Methods("PUT")
 
 	lk.HandleFunc("/bee_farm_sizes", LKCustomCRUD.GetBeeFarmSizes).Methods("GET")
 	lk.HandleFunc("/bee_farm_size", LKCustomCRUD.BeeFarmSizeCreate).Methods("POST")

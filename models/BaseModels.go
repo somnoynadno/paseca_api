@@ -20,7 +20,7 @@ type BaseModelWithCustom struct {
 
 type BaseModelWithUser struct {
 	ID        uint       `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time  `json:"-"`
+	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"-"`
 	DeletedAt *time.Time `json:"-"`
 	UserID    uint       `json:"-"`
