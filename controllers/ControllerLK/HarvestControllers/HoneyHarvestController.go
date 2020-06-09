@@ -1,4 +1,4 @@
-package BusinessLogic
+package HarvestControllers
 
 import (
 	"encoding/json"
@@ -14,14 +14,15 @@ import (
 	"time"
 )
 
-type PollenHarvestEditModel struct {
-	BeeFarmID     uint    `json:"bee_farm_id"`
+type HoneyHarvestEditModel struct {
+	HoneyTypeID   uint    `json:"honey_type_id"`
+	BeeFamilyID   uint    `json:"bee_family_id"`
 	Amount        float64 `json:"amount"`
 	Date          string  `json:"date"`
 }
 
-var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.PollenHarvest
+var GetUsersHoneyHarvests = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HoneyHarvest
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	order := r.FormValue("_order")
@@ -36,7 +37,7 @@ var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").Where("user_id = ?", id).
+	err := db.Preload("HoneyType").Preload("BeeFamily").Where("user_id = ?", id).
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end - start).Find(&entities).Error
 
 	if err != nil {
@@ -50,14 +51,14 @@ var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		var count string
-		db.Model(&models.PollenHarvest{}).Where("user_id = ?", id).Count(&count)
+		db.Model(&models.HoneyHarvest{}).Where("user_id = ?", id).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}
 }
 
-var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
-	EditModel := &PollenHarvestEditModel{}
+var CreateHoneyHarvest = func(w http.ResponseWriter, r *http.Request) {
+	EditModel := &HoneyHarvestEditModel{}
 
 	err := json.NewDecoder(r.Body).Decode(EditModel)
 	if err != nil {
@@ -72,8 +73,10 @@ var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Model := models.PollenHarvest{Amount: EditModel.Amount,
-		BeeFarmID: EditModel.BeeFarmID, Date: &t}
+	// TODO: predict total price based on honey type and amount
+	Model := models.HoneyHarvest{Amount: EditModel.Amount,
+		TotalPrice: 0, HoneyTypeID: EditModel.HoneyTypeID,
+		BeeFamilyID: EditModel.BeeFamilyID, Date: &t}
 	Model.UserID = id
 
 	db := db.GetDB()
@@ -86,8 +89,8 @@ var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeletePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
-	var model models.PollenHarvest
+var DeleteHoneyHarvest = func(w http.ResponseWriter, r *http.Request) {
+	var model models.HoneyHarvest
 
 	params := mux.Vars(r)
 	id := params["id"]

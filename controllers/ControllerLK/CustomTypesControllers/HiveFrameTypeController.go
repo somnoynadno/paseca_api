@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFormat
+var GetHiveFrameTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HiveFrameType
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.HiveFormat{}
+var HiveFrameTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.HiveFrameType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteHiveFormatByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.HiveFormat
+var DeleteHiveFrameTypeByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.HiveFrameType
 
 	params := mux.Vars(r)
 	id := params["id"]

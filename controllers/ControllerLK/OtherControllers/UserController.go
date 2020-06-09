@@ -1,4 +1,4 @@
-package BusinessLogic
+package OtherControllers
 
 import (
 	"encoding/json"

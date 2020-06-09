@@ -1,4 +1,4 @@
-package BusinessLogic
+package BeeFarmControllers
 
 import (
 	"encoding/json"
