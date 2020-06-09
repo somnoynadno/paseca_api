@@ -111,3 +111,27 @@ var DeleteReminder = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(true, "OK"))
 	}
 }
+
+var GetRemindersByBeeFarmID = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.Reminder
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	db := db.GetDB()
+	err := db.Where("bee_farm_id = ?", id).
+		Find(&entities).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	res, err := json.Marshal(entities)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.RespondJSON(w, res)
+	}
+}

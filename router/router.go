@@ -186,6 +186,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_family", BeeFarmControllers.CreateBeeFamily).Methods("POST")
 	lk.HandleFunc("/bee_family/{id}", BeeFarmControllers.DeleteBeeFamily).Methods("DELETE")
 	lk.HandleFunc("/do_bee_family_inspection/{id}", BeeFarmControllers.DoBeeFamilyInspection).Methods("POST")
+	lk.HandleFunc("/bee_families_by_bee_farm_id/{id}", BeeFarmControllers.GetBeeFamiliesByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.GetBeeFamilyStatuses).Methods("GET")
 	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.BeeFamilyStatusCreate).Methods("POST")
@@ -209,11 +210,14 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/control_harvest", HarvestControllers.CreateControlHarvest).Methods("POST")
 	lk.HandleFunc("/control_harvest/{id}", HarvestControllers.DeleteControlHarvest).Methods("DELETE")
 
+	lk.HandleFunc("/family_diseases_by_bee_farm_id/{id}", BeeFarmControllers.GetFamilyDiseasesByBeeFarmID).Methods("GET")
+
 	lk.HandleFunc("/hives", BeeFarmControllers.GetUsersFreeHives).Methods("GET")
 	lk.HandleFunc("/hive", BeeFarmControllers.CreateHive).Methods("POST")
 	lk.HandleFunc("/hive/{id}", BeeFarmControllers.DeleteHive).Methods("DELETE")
 	lk.HandleFunc("/hive/set_coords", BeeFarmControllers.SetHiveCoords).Methods("POST")
 	lk.HandleFunc("/hive/set_hive_bee_family", BeeFarmControllers.SetHiveBeeFamily).Methods("POST")
+	lk.HandleFunc("/hives_by_bee_farm_id/{id}", BeeFarmControllers.GetHivesByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/hive_formats", CustomTypesControllers.GetHiveFormats).Methods("GET")
 	lk.HandleFunc("/hive_format", CustomTypesControllers.HiveFormatCreate).Methods("POST")
@@ -244,6 +248,9 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/reminder", BeeFarmControllers.CreateReminder).Methods("POST")
 	lk.HandleFunc("/reminder/{id}", BeeFarmControllers.DeleteReminder).Methods("DELETE")
 	lk.HandleFunc("/check_reminder/{id}", BeeFarmControllers.CheckReminder).Methods("POST")
+	lk.HandleFunc("/reminders_by_bee_farm_id/{id}", BeeFarmControllers.GetRemindersByBeeFarmID).Methods("GET")
+
+	lk.HandleFunc("/swarms_by_bee_farm_id/{id}", BeeFarmControllers.GetSwarmsByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/user", OtherControllers.GetUser).Methods("GET")
 
