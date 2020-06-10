@@ -32,7 +32,7 @@ var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateBeeFarmType = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.BeeFarmType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

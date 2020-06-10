@@ -32,7 +32,7 @@ var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFamilyStatusCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateBeeFamilyStatus = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.BeeFamilyStatus{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

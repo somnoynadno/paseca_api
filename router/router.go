@@ -173,11 +173,11 @@ func InitRouter() *mux.Router {
 
 	// LK PATHS
 	lk.HandleFunc("/bee_breeds", CustomTypesControllers.GetBeeBreeds).Methods("GET")
-	lk.HandleFunc("/bee_breed", CustomTypesControllers.BeeBreedCreate).Methods("POST")
+	lk.HandleFunc("/bee_breed", CustomTypesControllers.CreateBeeBreed).Methods("POST")
 	lk.HandleFunc("/bee_breed/{id}", CustomTypesControllers.DeleteBeeBreedByID).Methods("DELETE")
 
 	lk.HandleFunc("/bee_diseases", CustomTypesControllers.GetBeeDiseases).Methods("GET")
-	lk.HandleFunc("/bee_disease", CustomTypesControllers.BeeDiseaseCreate).Methods("POST")
+	lk.HandleFunc("/bee_disease", CustomTypesControllers.CreateBeeDisease).Methods("POST")
 	lk.HandleFunc("/bee_disease/{id}", CustomTypesControllers.DeleteBeeDiseaseByID).Methods("DELETE")
 
 	lk.HandleFunc("/bee_families", BeeFarmControllers.GetUsersBeeFamilies).Methods("GET")
@@ -189,7 +189,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_families_by_bee_farm_id/{id}", BeeFarmControllers.GetBeeFamiliesByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.GetBeeFamilyStatuses).Methods("GET")
-	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.BeeFamilyStatusCreate).Methods("POST")
+	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.CreateBeeFamilyStatus).Methods("POST")
 	lk.HandleFunc("/bee_family_status/{id}", CustomTypesControllers.DeleteBeeFamilyStatusByID).Methods("DELETE")
 
 	lk.HandleFunc("/bee_farms", BeeFarmControllers.GetUsersBeeFarms).Methods("GET")
@@ -199,11 +199,11 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_farm/{id}", BeeFarmControllers.EditBeeFarm).Methods("PUT")
 
 	lk.HandleFunc("/bee_farm_sizes", CustomTypesControllers.GetBeeFarmSizes).Methods("GET")
-	lk.HandleFunc("/bee_farm_size", CustomTypesControllers.BeeFarmSizeCreate).Methods("POST")
+	lk.HandleFunc("/bee_farm_size", CustomTypesControllers.CreateBeeFarmSize).Methods("POST")
 	lk.HandleFunc("/bee_farm_size/{id}", CustomTypesControllers.DeleteBeeFarmSizeByID).Methods("DELETE")
 
 	lk.HandleFunc("/bee_farm_types", CustomTypesControllers.GetBeeFarmTypes).Methods("GET")
-	lk.HandleFunc("/bee_farm_type", CustomTypesControllers.BeeFarmTypeCreate).Methods("POST")
+	lk.HandleFunc("/bee_farm_type", CustomTypesControllers.CreateBeeFarmType).Methods("POST")
 	lk.HandleFunc("/bee_farm_type/{id}", CustomTypesControllers.DeleteBeeFarmTypeByID).Methods("DELETE")
 
 	lk.HandleFunc("/control_harvests", HarvestControllers.GetUsersControlHarvests).Methods("GET")
@@ -220,11 +220,11 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/hives_by_bee_farm_id/{id}", BeeFarmControllers.GetHivesByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/hive_formats", CustomTypesControllers.GetHiveFormats).Methods("GET")
-	lk.HandleFunc("/hive_format", CustomTypesControllers.HiveFormatCreate).Methods("POST")
+	lk.HandleFunc("/hive_format", CustomTypesControllers.CreateHiveFormat).Methods("POST")
 	lk.HandleFunc("/hive_format/{id}", CustomTypesControllers.DeleteHiveFormatByID).Methods("DELETE")
 
 	lk.HandleFunc("/hive_frame_types", CustomTypesControllers.GetHiveFrameTypes).Methods("GET")
-	lk.HandleFunc("/hive_frame_type", CustomTypesControllers.HiveFrameTypeCreate).Methods("POST")
+	lk.HandleFunc("/hive_frame_type", CustomTypesControllers.CreateHiveFrameType).Methods("POST")
 	lk.HandleFunc("/hive_frame_type/{id}", CustomTypesControllers.DeleteHiveFrameTypeByID).Methods("DELETE")
 
 	lk.HandleFunc("/honey_harvests", HarvestControllers.GetUsersHoneyHarvests).Methods("GET")
@@ -236,7 +236,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/honey_sale/{id}", HarvestControllers.DeleteHoneySale).Methods("DELETE")
 
 	lk.HandleFunc("/honey_types", CustomTypesControllers.GetHoneyTypes).Methods("GET")
-	lk.HandleFunc("/honey_type", CustomTypesControllers.HoneyTypeCreate).Methods("POST")
+	lk.HandleFunc("/honey_type", CustomTypesControllers.CreateHoneyType).Methods("POST")
 	lk.HandleFunc("/honey_type/{id}", CustomTypesControllers.DeleteHoneyTypeByID).Methods("DELETE")
 
 	lk.HandleFunc("/news", OtherControllers.GetLastNews).Methods("GET")
@@ -250,7 +250,13 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/check_reminder/{id}", BeeFarmControllers.CheckReminder).Methods("POST")
 	lk.HandleFunc("/reminders_by_bee_farm_id/{id}", BeeFarmControllers.GetRemindersByBeeFarmID).Methods("GET")
 
+	lk.HandleFunc("/swarm", BeeFarmControllers.CreateSwarm).Methods("POST")
+	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.DeleteSwarm).Methods("DELETE")
 	lk.HandleFunc("/swarms_by_bee_farm_id/{id}", BeeFarmControllers.GetSwarmsByBeeFarmID).Methods("GET")
+
+	lk.HandleFunc("/swarm_statuses", CustomTypesControllers.GetSwarmStatuses).Methods("GET")
+	lk.HandleFunc("/swarm_status", CustomTypesControllers.CreateSwarmStatus).Methods("POST")
+	lk.HandleFunc("/swarm_status/{id}", CustomTypesControllers.DeleteSwarmStatusByID).Methods("DELETE")
 
 	lk.HandleFunc("/user", OtherControllers.GetUser).Methods("GET")
 

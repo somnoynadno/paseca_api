@@ -32,7 +32,7 @@ var GetHiveFrameTypes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFrameTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateHiveFrameType = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.HiveFrameType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

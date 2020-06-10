@@ -32,7 +32,7 @@ var GetBeeFarmSizes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateBeeFarmSize = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.BeeFarmSize{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFormat
+var GetSwarmStatuses = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.SwarmStatus
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var CreateHiveFormat = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.HiveFormat{}
+var CreateSwarmStatus = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.SwarmStatus{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var CreateHiveFormat = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteHiveFormatByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.HiveFormat
+var DeleteSwarmStatusByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.SwarmStatus
 
 	params := mux.Vars(r)
 	id := params["id"]

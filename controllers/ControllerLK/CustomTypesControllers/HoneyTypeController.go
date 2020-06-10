@@ -32,7 +32,7 @@ var GetHoneyTypes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HoneyTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateHoneyType = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.HoneyType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

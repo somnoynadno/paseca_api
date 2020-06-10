@@ -32,7 +32,7 @@ var GetBeeBreeds = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateBeeBreed = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.BeeBreed{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 

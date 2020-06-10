@@ -32,7 +32,7 @@ var GetBeeDiseases = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
+var CreateBeeDisease = func(w http.ResponseWriter, r *http.Request) {
 	entity := &models.BeeDisease{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
