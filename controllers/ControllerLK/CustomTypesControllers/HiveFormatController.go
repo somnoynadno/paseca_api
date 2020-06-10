@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetBeeFarmSizes = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFarmSize
+var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HiveFormat
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetBeeFarmSizes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.BeeFarmSize{}
+var CreateHiveFormat = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.HiveFormat{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteBeeFarmSizeByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.BeeFarmSize
+var DeleteHiveFormatByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.HiveFormat
 
 	params := mux.Vars(r)
 	id := params["id"]

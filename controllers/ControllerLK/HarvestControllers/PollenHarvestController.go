@@ -1,4 +1,4 @@
-package BusinessLogic
+package HarvestControllers
 
 import (
 	"encoding/json"
@@ -14,16 +14,14 @@ import (
 	"time"
 )
 
-type HoneySaleEditModel struct {
-	HoneyTypeID   uint    `json:"honey_type_id"`
+type PollenHarvestEditModel struct {
 	BeeFarmID     uint    `json:"bee_farm_id"`
 	Amount        float64 `json:"amount"`
-	TotalPrice    float64 `json:"total_price"`
 	Date          string  `json:"date"`
 }
 
-var GetUsersHoneySales = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HoneySale
+var GetUsersPollenHarvests = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.PollenHarvest
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	order := r.FormValue("_order")
@@ -38,7 +36,7 @@ var GetUsersHoneySales = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("HoneyType").Preload("BeeFarm").Where("user_id = ?", id).
+	err := db.Preload("BeeFarm").Where("user_id = ?", id).
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end - start).Find(&entities).Error
 
 	if err != nil {
@@ -52,14 +50,14 @@ var GetUsersHoneySales = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		var count string
-		db.Model(&models.HoneySale{}).Where("user_id = ?", id).Count(&count)
+		db.Model(&models.PollenHarvest{}).Where("user_id = ?", id).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}
 }
 
-var CreateHoneySale = func(w http.ResponseWriter, r *http.Request) {
-	EditModel := &HoneySaleEditModel{}
+var CreatePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
+	EditModel := &PollenHarvestEditModel{}
 
 	err := json.NewDecoder(r.Body).Decode(EditModel)
 	if err != nil {
@@ -74,8 +72,7 @@ var CreateHoneySale = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Model := models.HoneySale{Amount: EditModel.Amount,
-		TotalPrice: EditModel.TotalPrice, HoneyTypeID: EditModel.HoneyTypeID,
+	Model := models.PollenHarvest{Amount: EditModel.Amount,
 		BeeFarmID: EditModel.BeeFarmID, Date: &t}
 	Model.UserID = id
 
@@ -89,8 +86,8 @@ var CreateHoneySale = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteHoneySale = func(w http.ResponseWriter, r *http.Request) {
-	var model models.HoneySale
+var DeletePollenHarvest = func(w http.ResponseWriter, r *http.Request) {
+	var model models.PollenHarvest
 
 	params := mux.Vars(r)
 	id := params["id"]

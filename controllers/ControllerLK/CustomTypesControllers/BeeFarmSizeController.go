@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFamilyStatus
+var GetBeeFarmSizes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFarmSize
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFamilyStatusCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.BeeFamilyStatus{}
+var CreateBeeFarmSize = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.BeeFarmSize{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var BeeFamilyStatusCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteBeeFamilyStatusByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.BeeFamilyStatus
+var DeleteBeeFarmSizeByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.BeeFarmSize
 
 	params := mux.Vars(r)
 	id := params["id"]
@@ -88,4 +88,3 @@ var DeleteBeeFamilyStatusByID = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(true, "OK"))
 	}
 }
-

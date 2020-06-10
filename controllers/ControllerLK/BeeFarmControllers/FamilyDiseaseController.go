@@ -1,4 +1,4 @@
-package BusinessLogic
+package BeeFarmControllers
 
 import (
 	"encoding/json"
@@ -9,18 +9,15 @@ import (
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
-	"time"
 )
 
-type ReminderCreateModel struct {
-	Title     string  `json:"title"`
-	Text      string  `json:"text"`
-	Date      string  `json:"date"`
-	BeeFarmID uint    `json:"bee_farm_id"`
+type FamilyDiseaseCreateModel struct {
+	BeeFamilyID  uint `json:"bee_family_id"`
+	BeeDiseaseID uint `json:"bee_disease_id"`
 }
 
-var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
-	CreateModel := &ReminderCreateModel{}
+var CreateFamilyDisease = func(w http.ResponseWriter, r *http.Request) {
+	CreateModel := &FamilyDiseaseCreateModel{}
 
 	err := json.NewDecoder(r.Body).Decode(CreateModel)
 	if err != nil {
@@ -28,10 +25,8 @@ var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date, _ := time.Parse("2006-01-02", CreateModel.Date)
-
-	Model := models.Reminder{BeeFarmID: CreateModel.BeeFarmID,
-		Title: CreateModel.Title, Text: CreateModel.Text, Date: date,
+	Model := models.FamilyDisease{
+		BeeFamilyID: CreateModel.BeeFamilyID, BeeDiseaseID: CreateModel.BeeDiseaseID,
 	}
 	Model.UserID = u.GetUserIDFromRequest(r)
 
@@ -45,42 +40,34 @@ var CreateReminder = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var CheckReminder = func(w http.ResponseWriter, r *http.Request) {
-	var model models.Reminder
+var GetFamilyDiseasesByBeeFarmID = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.FamilyDisease
 
 	params := mux.Vars(r)
 	id := params["id"]
-	userID := u.GetUserIDFromRequest(r)
 
 	db := db.GetDB()
-	err := db.First(&model, id).Error
+	err := db.Joins("join bee_families on bee_families.id = family_diseases.bee_family_id").
+		Where("bee_families.bee_farm_id = ?", id).Preload("BeeDisease").
+		Preload("BeeFamily", "bee_farm_id = ?", id).
+		Find(&entities).Error
 
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			u.HandleNotFound(w)
-		} else {
-			u.HandleBadRequest(w, err)
-		}
+		u.HandleBadRequest(w, err)
 		return
 	}
 
-	if model.UserID != userID {
-		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
-		return
-	}
-
-	model.IsChecked = !model.IsChecked
-	err = db.Save(&model).Error
+	res, err := json.Marshal(entities)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		u.Respond(w, u.Message(true, "OK"))
+		u.RespondJSON(w, res)
 	}
 }
 
-var DeleteReminder = func(w http.ResponseWriter, r *http.Request) {
-	var model models.Reminder
+var DeleteFamilyDisease = func(w http.ResponseWriter, r *http.Request) {
+	var model models.FamilyDisease
 
 	params := mux.Vars(r)
 	id := params["id"]

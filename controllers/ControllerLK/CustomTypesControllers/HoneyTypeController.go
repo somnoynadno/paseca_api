@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetBeeBreeds = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeBreed
+var GetHoneyTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HoneyType
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetBeeBreeds = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.BeeBreed{}
+var CreateHoneyType = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.HoneyType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteBeeBreedByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.BeeBreed
+var DeleteHoneyTypeByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.HoneyType
 
 	params := mux.Vars(r)
 	id := params["id"]
@@ -88,4 +88,3 @@ var DeleteBeeBreedByID = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(true, "OK"))
 	}
 }
-

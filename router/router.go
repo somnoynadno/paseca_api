@@ -4,8 +4,9 @@ import (
 	"github.com/gorilla/mux"
 	"paseca/controllers/AuthController"
 	"paseca/controllers/CRUD"
-	"paseca/controllers/ControllerLK/BusinessLogic"
-	"paseca/controllers/ControllerLK/LKCustomCRUD"
+	"paseca/controllers/ControllerLK/BeeFarmControllers"
+	"paseca/controllers/ControllerLK/HarvestControllers"
+	"paseca/controllers/ControllerLK/CustomTypesControllers"
 	"paseca/controllers/ControllerLK/OtherControllers"
 	"paseca/middleware"
 	u "paseca/utils"
@@ -171,79 +172,95 @@ func InitRouter() *mux.Router {
 	auth.HandleFunc("/login", AuthController.Authenticate).Methods("POST")
 
 	// LK PATHS
-	lk.HandleFunc("/bee_breeds", LKCustomCRUD.GetBeeBreeds).Methods("GET")
-	lk.HandleFunc("/bee_breed", LKCustomCRUD.BeeBreedCreate).Methods("POST")
-	lk.HandleFunc("/bee_breed/{id}", LKCustomCRUD.DeleteBeeBreedByID).Methods("DELETE")
+	lk.HandleFunc("/bee_breeds", CustomTypesControllers.GetBeeBreeds).Methods("GET")
+	lk.HandleFunc("/bee_breed", CustomTypesControllers.CreateBeeBreed).Methods("POST")
+	lk.HandleFunc("/bee_breed/{id}", CustomTypesControllers.DeleteBeeBreedByID).Methods("DELETE")
 
-	lk.HandleFunc("/bee_diseases", LKCustomCRUD.GetBeeDiseases).Methods("GET")
-	lk.HandleFunc("/bee_disease", LKCustomCRUD.BeeDiseaseCreate).Methods("POST")
-	lk.HandleFunc("/bee_disease/{id}", LKCustomCRUD.DeleteBeeDiseaseByID).Methods("DELETE")
+	lk.HandleFunc("/bee_diseases", CustomTypesControllers.GetBeeDiseases).Methods("GET")
+	lk.HandleFunc("/bee_disease", CustomTypesControllers.CreateBeeDisease).Methods("POST")
+	lk.HandleFunc("/bee_disease/{id}", CustomTypesControllers.DeleteBeeDiseaseByID).Methods("DELETE")
 
-	lk.HandleFunc("/bee_families", BusinessLogic.GetUsersBeeFamilies).Methods("GET")
-	lk.HandleFunc("/bee_families_without_hives", BusinessLogic.GetUsersBeeFamiliesWithoutHives).Methods("GET")
-	lk.HandleFunc("/bee_family/{id}", BusinessLogic.GetBeeFamilyByID).Methods("GET")
-	lk.HandleFunc("/bee_family", BusinessLogic.CreateBeeFamily).Methods("POST")
-	lk.HandleFunc("/bee_family/{id}", BusinessLogic.DeleteBeeFamily).Methods("DELETE")
-	lk.HandleFunc("/do_bee_family_inspection/{id}", BusinessLogic.DoBeeFamilyInspection).Methods("POST")
+	lk.HandleFunc("/bee_families", BeeFarmControllers.GetUsersBeeFamilies).Methods("GET")
+	lk.HandleFunc("/bee_families_without_hives", BeeFarmControllers.GetUsersBeeFamiliesWithoutHives).Methods("GET")
+	lk.HandleFunc("/bee_family/{id}", BeeFarmControllers.GetBeeFamilyByID).Methods("GET")
+	lk.HandleFunc("/bee_family", BeeFarmControllers.CreateBeeFamily).Methods("POST")
+	lk.HandleFunc("/bee_family/{id}", BeeFarmControllers.DeleteBeeFamily).Methods("DELETE")
+	lk.HandleFunc("/do_bee_family_inspection/{id}", BeeFarmControllers.DoBeeFamilyInspection).Methods("POST")
+	lk.HandleFunc("/bee_families_by_bee_farm_id/{id}", BeeFarmControllers.GetBeeFamiliesByBeeFarmID).Methods("GET")
 
-	lk.HandleFunc("/bee_family_statuses", LKCustomCRUD.GetBeeFamilyStatuses).Methods("GET")
-	lk.HandleFunc("/bee_family_statuses", LKCustomCRUD.BeeFamilyStatusCreate).Methods("POST")
-	lk.HandleFunc("/bee_family_status/{id}", LKCustomCRUD.DeleteBeeFamilyStatusByID).Methods("DELETE")
+	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.GetBeeFamilyStatuses).Methods("GET")
+	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.CreateBeeFamilyStatus).Methods("POST")
+	lk.HandleFunc("/bee_family_status/{id}", CustomTypesControllers.DeleteBeeFamilyStatusByID).Methods("DELETE")
 
-	lk.HandleFunc("/bee_farms", BusinessLogic.GetUsersBeeFarms).Methods("GET")
-	lk.HandleFunc("/bee_farm/{id}", BusinessLogic.GetBeeFarmByID).Methods("GET")
-	lk.HandleFunc("/bee_farm", BusinessLogic.CreateBeeFarm).Methods("POST")
-	lk.HandleFunc("/bee_farm/{id}", BusinessLogic.DeleteBeeFarm).Methods("DELETE")
+	lk.HandleFunc("/bee_farms", BeeFarmControllers.GetUsersBeeFarms).Methods("GET")
+	lk.HandleFunc("/bee_farm/{id}", BeeFarmControllers.GetBeeFarmByID).Methods("GET")
+	lk.HandleFunc("/bee_farm", BeeFarmControllers.CreateBeeFarm).Methods("POST")
+	lk.HandleFunc("/bee_farm/{id}", BeeFarmControllers.DeleteBeeFarm).Methods("DELETE")
+	lk.HandleFunc("/bee_farm/{id}", BeeFarmControllers.EditBeeFarm).Methods("PUT")
 
-	lk.HandleFunc("/bee_farm_sizes", LKCustomCRUD.GetBeeFarmSizes).Methods("GET")
-	lk.HandleFunc("/bee_farm_size", LKCustomCRUD.BeeFarmSizeCreate).Methods("POST")
-	lk.HandleFunc("/bee_farm_size/{id}", LKCustomCRUD.DeleteBeeFarmSizeByID).Methods("DELETE")
+	lk.HandleFunc("/bee_farm_sizes", CustomTypesControllers.GetBeeFarmSizes).Methods("GET")
+	lk.HandleFunc("/bee_farm_size", CustomTypesControllers.CreateBeeFarmSize).Methods("POST")
+	lk.HandleFunc("/bee_farm_size/{id}", CustomTypesControllers.DeleteBeeFarmSizeByID).Methods("DELETE")
 
-	lk.HandleFunc("/bee_farm_types", LKCustomCRUD.GetBeeFarmTypes).Methods("GET")
-	lk.HandleFunc("/bee_farm_type", LKCustomCRUD.BeeFarmTypeCreate).Methods("POST")
-	lk.HandleFunc("/bee_farm_type/{id}", LKCustomCRUD.DeleteBeeFarmTypeByID).Methods("DELETE")
+	lk.HandleFunc("/bee_farm_types", CustomTypesControllers.GetBeeFarmTypes).Methods("GET")
+	lk.HandleFunc("/bee_farm_type", CustomTypesControllers.CreateBeeFarmType).Methods("POST")
+	lk.HandleFunc("/bee_farm_type/{id}", CustomTypesControllers.DeleteBeeFarmTypeByID).Methods("DELETE")
 
-	lk.HandleFunc("/control_harvests", BusinessLogic.GetUsersControlHarvests).Methods("GET")
-	lk.HandleFunc("/control_harvest", BusinessLogic.CreateControlHarvest).Methods("POST")
-	lk.HandleFunc("/control_harvest/{id}", BusinessLogic.DeleteControlHarvest).Methods("DELETE")
+	lk.HandleFunc("/control_harvests", HarvestControllers.GetUsersControlHarvests).Methods("GET")
+	lk.HandleFunc("/control_harvest", HarvestControllers.CreateControlHarvest).Methods("POST")
+	lk.HandleFunc("/control_harvest/{id}", HarvestControllers.DeleteControlHarvest).Methods("DELETE")
 
-	lk.HandleFunc("/hives", BusinessLogic.GetUsersFreeHives).Methods("GET")
-	lk.HandleFunc("/hive", BusinessLogic.CreateHive).Methods("POST")
-	lk.HandleFunc("/hive/{id}", BusinessLogic.DeleteHive).Methods("DELETE")
-	lk.HandleFunc("/hive/set_coords", BusinessLogic.SetHiveCoords).Methods("POST")
-	lk.HandleFunc("/hive/set_hive_bee_family", BusinessLogic.SetHiveBeeFamily).Methods("POST")
+	lk.HandleFunc("/family_disease", BeeFarmControllers.CreateFamilyDisease).Methods("POST")
+	lk.HandleFunc("/family_disease/{id}", BeeFarmControllers.DeleteFamilyDisease).Methods("DELETE")
+	lk.HandleFunc("/family_diseases_by_bee_farm_id/{id}", BeeFarmControllers.GetFamilyDiseasesByBeeFarmID).Methods("GET")
 
-	lk.HandleFunc("/hive_formats", LKCustomCRUD.GetHiveFormats).Methods("GET")
-	lk.HandleFunc("/hive_format", LKCustomCRUD.HiveFormatCreate).Methods("POST")
-	lk.HandleFunc("/hive_format/{id}", LKCustomCRUD.DeleteHiveFormatByID).Methods("DELETE")
+	lk.HandleFunc("/hives", BeeFarmControllers.GetUsersFreeHives).Methods("GET")
+	lk.HandleFunc("/hive", BeeFarmControllers.CreateHive).Methods("POST")
+	lk.HandleFunc("/hive/{id}", BeeFarmControllers.DeleteHive).Methods("DELETE")
+	lk.HandleFunc("/hive/set_coords", BeeFarmControllers.SetHiveCoords).Methods("POST")
+	lk.HandleFunc("/hive/set_hive_bee_family", BeeFarmControllers.SetHiveBeeFamily).Methods("POST")
+	lk.HandleFunc("/hives_by_bee_farm_id/{id}", BeeFarmControllers.GetHivesByBeeFarmID).Methods("GET")
 
-	lk.HandleFunc("/hive_frame_types", LKCustomCRUD.GetHiveFrameTypes).Methods("GET")
-	lk.HandleFunc("/hive_frame_type", LKCustomCRUD.HiveFrameTypeCreate).Methods("POST")
-	lk.HandleFunc("/hive_frame_type/{id}", LKCustomCRUD.DeleteHiveFrameTypeByID).Methods("DELETE")
+	lk.HandleFunc("/hive_formats", CustomTypesControllers.GetHiveFormats).Methods("GET")
+	lk.HandleFunc("/hive_format", CustomTypesControllers.CreateHiveFormat).Methods("POST")
+	lk.HandleFunc("/hive_format/{id}", CustomTypesControllers.DeleteHiveFormatByID).Methods("DELETE")
 
-	lk.HandleFunc("/honey_harvests", BusinessLogic.GetUsersHoneyHarvests).Methods("GET")
-	lk.HandleFunc("/honey_harvest", BusinessLogic.CreateHoneyHarvest).Methods("POST")
-	lk.HandleFunc("/honey_harvest/{id}", BusinessLogic.DeleteHoneyHarvest).Methods("DELETE")
+	lk.HandleFunc("/hive_frame_types", CustomTypesControllers.GetHiveFrameTypes).Methods("GET")
+	lk.HandleFunc("/hive_frame_type", CustomTypesControllers.CreateHiveFrameType).Methods("POST")
+	lk.HandleFunc("/hive_frame_type/{id}", CustomTypesControllers.DeleteHiveFrameTypeByID).Methods("DELETE")
 
-	lk.HandleFunc("/honey_sales", BusinessLogic.GetUsersHoneySales).Methods("GET")
-	lk.HandleFunc("/honey_sale", BusinessLogic.CreateHoneySale).Methods("POST")
-	lk.HandleFunc("/honey_sale/{id}", BusinessLogic.DeleteHoneySale).Methods("DELETE")
+	lk.HandleFunc("/honey_harvests", HarvestControllers.GetUsersHoneyHarvests).Methods("GET")
+	lk.HandleFunc("/honey_harvest", HarvestControllers.CreateHoneyHarvest).Methods("POST")
+	lk.HandleFunc("/honey_harvest/{id}", HarvestControllers.DeleteHoneyHarvest).Methods("DELETE")
 
-	lk.HandleFunc("/honey_types", LKCustomCRUD.GetHoneyTypes).Methods("GET")
-	lk.HandleFunc("/honey_type", LKCustomCRUD.HoneyTypeCreate).Methods("POST")
-	lk.HandleFunc("/honey_type/{id}", LKCustomCRUD.DeleteHoneyTypeByID).Methods("DELETE")
+	lk.HandleFunc("/honey_sales", HarvestControllers.GetUsersHoneySales).Methods("GET")
+	lk.HandleFunc("/honey_sale", HarvestControllers.CreateHoneySale).Methods("POST")
+	lk.HandleFunc("/honey_sale/{id}", HarvestControllers.DeleteHoneySale).Methods("DELETE")
+
+	lk.HandleFunc("/honey_types", CustomTypesControllers.GetHoneyTypes).Methods("GET")
+	lk.HandleFunc("/honey_type", CustomTypesControllers.CreateHoneyType).Methods("POST")
+	lk.HandleFunc("/honey_type/{id}", CustomTypesControllers.DeleteHoneyTypeByID).Methods("DELETE")
 
 	lk.HandleFunc("/news", OtherControllers.GetLastNews).Methods("GET")
 
-	lk.HandleFunc("/pollen_harvests", BusinessLogic.GetUsersPollenHarvests).Methods("GET")
-	lk.HandleFunc("/pollen_harvest", BusinessLogic.CreatePollenHarvest).Methods("POST")
-	lk.HandleFunc("/pollen_harvest/{id}", BusinessLogic.DeletePollenHarvest).Methods("DELETE")
+	lk.HandleFunc("/pollen_harvests", HarvestControllers.GetUsersPollenHarvests).Methods("GET")
+	lk.HandleFunc("/pollen_harvest", HarvestControllers.CreatePollenHarvest).Methods("POST")
+	lk.HandleFunc("/pollen_harvest/{id}", HarvestControllers.DeletePollenHarvest).Methods("DELETE")
 
-	lk.HandleFunc("/reminder", BusinessLogic.CreateReminder).Methods("POST")
-	lk.HandleFunc("/reminder/{id}", BusinessLogic.DeleteReminder).Methods("DELETE")
-	lk.HandleFunc("/check_reminder/{id}", BusinessLogic.CheckReminder).Methods("POST")
+	lk.HandleFunc("/reminder", BeeFarmControllers.CreateReminder).Methods("POST")
+	lk.HandleFunc("/reminder/{id}", BeeFarmControllers.DeleteReminder).Methods("DELETE")
+	lk.HandleFunc("/check_reminder/{id}", BeeFarmControllers.CheckReminder).Methods("POST")
+	lk.HandleFunc("/reminders_by_bee_farm_id/{id}", BeeFarmControllers.GetRemindersByBeeFarmID).Methods("GET")
 
-	lk.HandleFunc("/user", BusinessLogic.GetUser).Methods("GET")
+	lk.HandleFunc("/swarm", BeeFarmControllers.CreateSwarm).Methods("POST")
+	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.DeleteSwarm).Methods("DELETE")
+	lk.HandleFunc("/swarms_by_bee_farm_id/{id}", BeeFarmControllers.GetSwarmsByBeeFarmID).Methods("GET")
+
+	lk.HandleFunc("/swarm_statuses", CustomTypesControllers.GetSwarmStatuses).Methods("GET")
+	lk.HandleFunc("/swarm_status", CustomTypesControllers.CreateSwarmStatus).Methods("POST")
+	lk.HandleFunc("/swarm_status/{id}", CustomTypesControllers.DeleteSwarmStatusByID).Methods("DELETE")
+
+	lk.HandleFunc("/user", OtherControllers.GetUser).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order

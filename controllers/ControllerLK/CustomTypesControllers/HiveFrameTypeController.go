@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFarmType
+var GetHiveFrameTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HiveFrameType
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetBeeFarmTypes = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmTypeCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.BeeFarmType{}
+var CreateHiveFrameType = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.HiveFrameType{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var BeeFarmTypeCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteBeeFarmTypeByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.BeeFarmType
+var DeleteHiveFrameTypeByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.HiveFrameType
 
 	params := mux.Vars(r)
 	id := params["id"]
@@ -88,4 +88,3 @@ var DeleteBeeFarmTypeByID = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(true, "OK"))
 	}
 }
-

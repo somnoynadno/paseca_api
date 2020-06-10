@@ -1,4 +1,4 @@
-package LKCustomCRUD
+package CustomTypesControllers
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 	u "paseca/utils"
 )
 
-var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFormat
+var GetBeeFamilyStatuses = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFamilyStatus
 	id := r.Context().Value("context").(u.Values).Get("user_id")
 
 	db := db.GetDB()
@@ -32,8 +32,8 @@ var GetHiveFormats = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
-	entity := &models.HiveFormat{}
+var CreateBeeFamilyStatus = func(w http.ResponseWriter, r *http.Request) {
+	entity := &models.BeeFamilyStatus{}
 	err := json.NewDecoder(r.Body).Decode(entity)
 
 	if err != nil {
@@ -55,8 +55,8 @@ var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DeleteHiveFormatByID = func(w http.ResponseWriter, r *http.Request) {
-	var entity models.HiveFormat
+var DeleteBeeFamilyStatusByID = func(w http.ResponseWriter, r *http.Request) {
+	var entity models.BeeFamilyStatus
 
 	params := mux.Vars(r)
 	id := params["id"]
@@ -88,3 +88,4 @@ var DeleteHiveFormatByID = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(true, "OK"))
 	}
 }
+
