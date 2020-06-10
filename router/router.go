@@ -210,6 +210,8 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/control_harvest", HarvestControllers.CreateControlHarvest).Methods("POST")
 	lk.HandleFunc("/control_harvest/{id}", HarvestControllers.DeleteControlHarvest).Methods("DELETE")
 
+	lk.HandleFunc("/family_disease", BeeFarmControllers.CreateFamilyDisease).Methods("POST")
+	lk.HandleFunc("/family_disease/{id}", BeeFarmControllers.DeleteFamilyDisease).Methods("DELETE")
 	lk.HandleFunc("/family_diseases_by_bee_farm_id/{id}", BeeFarmControllers.GetFamilyDiseasesByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/hives", BeeFarmControllers.GetUsersFreeHives).Methods("GET")
