@@ -47,7 +47,8 @@ var GetFamilyDiseasesByBeeFarmID = func(w http.ResponseWriter, r *http.Request) 
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeDisease").
+	err := db.Joins("join bee_families on bee_families.id = family_diseases.bee_family_id").
+		Where("bee_families.bee_farm_id = ?", id).Preload("BeeDisease").
 		Preload("BeeFamily", "bee_farm_id = ?", id).
 		Find(&entities).Error
 
