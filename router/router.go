@@ -8,6 +8,7 @@ import (
 	"paseca/controllers/ControllerLK/HarvestControllers"
 	"paseca/controllers/ControllerLK/CustomTypesControllers"
 	"paseca/controllers/ControllerLK/OtherControllers"
+	"paseca/controllers/ControllerLK/WikiControllers"
 	"paseca/middleware"
 	u "paseca/utils"
 )
@@ -273,6 +274,10 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/swarm_status/{id}", CustomTypesControllers.DeleteSwarmStatusByID).Methods("DELETE")
 
 	lk.HandleFunc("/user", OtherControllers.GetUser).Methods("GET")
+
+	lk.HandleFunc("/wiki_sections", WikiControllers.GetWikiSections).Methods("GET")
+	lk.HandleFunc("/wiki_pages_by_section_id/{id}", WikiControllers.GetWikiPagesBySectionID).Methods("GET")
+	lk.HandleFunc("/wiki_page/{id}", WikiControllers.GetWikiPageByID).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order
