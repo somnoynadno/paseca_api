@@ -168,6 +168,18 @@ func InitRouter() *mux.Router {
 	admin.HandleFunc("/user/{id}", CRUD.UserUpdate).Methods("PUT")
 	admin.HandleFunc("/user/{id}", CRUD.UserDelete).Methods("DELETE")
 
+	admin.HandleFunc("/wiki_page", CRUD.WikiPageQuery).Methods("GET")
+	admin.HandleFunc("/wiki_page", CRUD.WikiPageCreate).Methods("POST")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageRetrieve).Methods("GET")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageUpdate).Methods("PUT")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageDelete).Methods("DELETE")
+
+	admin.HandleFunc("/wiki_section", CRUD.WikiSectionQuery).Methods("GET")
+	admin.HandleFunc("/wiki_section", CRUD.WikiSectionCreate).Methods("POST")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionRetrieve).Methods("GET")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionUpdate).Methods("PUT")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionDelete).Methods("DELETE")
+
 	// AUTH PATHS
 	auth.HandleFunc("/login", AuthController.Authenticate).Methods("POST")
 
