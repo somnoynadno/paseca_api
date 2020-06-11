@@ -8,6 +8,7 @@ import (
 	"paseca/controllers/ControllerLK/HarvestControllers"
 	"paseca/controllers/ControllerLK/CustomTypesControllers"
 	"paseca/controllers/ControllerLK/OtherControllers"
+	"paseca/controllers/ControllerLK/WikiControllers"
 	"paseca/middleware"
 	u "paseca/utils"
 )
@@ -168,6 +169,18 @@ func InitRouter() *mux.Router {
 	admin.HandleFunc("/user/{id}", CRUD.UserUpdate).Methods("PUT")
 	admin.HandleFunc("/user/{id}", CRUD.UserDelete).Methods("DELETE")
 
+	admin.HandleFunc("/wiki_page", CRUD.WikiPageQuery).Methods("GET")
+	admin.HandleFunc("/wiki_page", CRUD.WikiPageCreate).Methods("POST")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageRetrieve).Methods("GET")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageUpdate).Methods("PUT")
+	admin.HandleFunc("/wiki_page/{id}", CRUD.WikiPageDelete).Methods("DELETE")
+
+	admin.HandleFunc("/wiki_section", CRUD.WikiSectionQuery).Methods("GET")
+	admin.HandleFunc("/wiki_section", CRUD.WikiSectionCreate).Methods("POST")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionRetrieve).Methods("GET")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionUpdate).Methods("PUT")
+	admin.HandleFunc("/wiki_section/{id}", CRUD.WikiSectionDelete).Methods("DELETE")
+
 	// AUTH PATHS
 	auth.HandleFunc("/login", AuthController.Authenticate).Methods("POST")
 
@@ -261,6 +274,10 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/swarm_status/{id}", CustomTypesControllers.DeleteSwarmStatusByID).Methods("DELETE")
 
 	lk.HandleFunc("/user", OtherControllers.GetUser).Methods("GET")
+
+	lk.HandleFunc("/wiki_sections", WikiControllers.GetWikiSections).Methods("GET")
+	lk.HandleFunc("/wiki_pages_by_section_id/{id}", WikiControllers.GetWikiPagesBySectionID).Methods("GET")
+	lk.HandleFunc("/wiki_page/{id}", WikiControllers.GetWikiPageByID).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order

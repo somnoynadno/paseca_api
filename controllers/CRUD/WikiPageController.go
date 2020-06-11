@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var UserCreate = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
-	err := json.NewDecoder(r.Body).Decode(User)
+var WikiPageCreate = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
+	err := json.NewDecoder(r.Body).Decode(WikiPage)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,25 +23,24 @@ var UserCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(User).Error
+	err = db.Create(WikiPage).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(User)
+		res, _ := json.Marshal(WikiPage)
 		u.RespondJSON(w, res)
 	}
 }
 
-var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
+var WikiPageRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
-		Preload("BeeFarms").First(&User, id).Error
+	err := db.Preload("WikiSection").First(&WikiPage, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -52,24 +51,24 @@ var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(User)
+	res, err := json.Marshal(WikiPage)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if User.ID == 0 {
+	} else if WikiPage.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
+var WikiPageUpdate = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&User, id).Error
+	err := db.First(&WikiPage, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -80,8 +79,8 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser := &models.User{}
-	err = json.NewDecoder(r.Body).Decode(newUser)
+	newWikiPage := &models.WikiPage{}
+	err = json.NewDecoder(r.Body).Decode(newWikiPage)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -89,11 +88,9 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newUser.SubscriptionType = models.SubscriptionType{}
-	newUser.SubscriptionStatus = models.SubscriptionStatus{}
+	newWikiPage.WikiSection = WikiPage.WikiSection
 
-	db.Model(&User).Update("is_admin", newUser.IsAdmin)
-	err = db.Model(&User).Updates(newUser).Error
+	err = db.Model(&WikiPage).Updates(newWikiPage).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -102,12 +99,12 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var UserDelete = func(w http.ResponseWriter, r *http.Request) {
+var WikiPageDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.User{}, id).Error
+	err := db.Delete(&models.WikiPage{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -116,8 +113,8 @@ var UserDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var UserQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.User
+var WikiPageQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.WikiPage
 	var count string
 
 	order := r.FormValue("_order")
@@ -132,8 +129,8 @@ var UserQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("WikiSection").Order(fmt.Sprintf("%s %s", sort, order)).
+		Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -145,7 +142,7 @@ var UserQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.User{}).Count(&count)
+		db.Model(&models.WikiPage{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

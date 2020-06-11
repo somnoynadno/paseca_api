@@ -50,6 +50,7 @@ var CreateBeeFamilyStatus = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
+		db.Model(&entity).Update("is_custom", true)
 		res, _ := json.Marshal(entity)
 		u.RespondJSON(w, res)
 	}

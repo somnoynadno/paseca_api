@@ -52,6 +52,8 @@ func init() {
 		models.Swarm{},
 		models.SwarmStatus{},
 		models.User{},
+		models.WikiPage{},
+		models.WikiSection{},
 		)
 }
 
