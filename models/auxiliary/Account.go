@@ -8,6 +8,7 @@ import (
 	"paseca/db"
 	"paseca/models"
 	u "paseca/utils"
+	"time"
 )
 
 type Account struct {
@@ -31,9 +32,22 @@ func Login(email, password string) map[string]interface{} {
 		return u.Message(false, "Invalid login credentials. Please try again")
 	}
 	// Worked! Logged In
+	db.GetDB().Model(&user).Update("LastLogin", time.Now())
+
+	// check if subscription is expired
+	IsExpired := false
+	if user.SubscriptionEnd != nil && user.SubscriptionEnd.Before(time.Now()) {
+		IsExpired = true
+		db.GetDB().Model(&user).Update("SubscriptionStatusID", 2)
+	} else {
+		db.GetDB().Model(&user).Update("SubscriptionStatusID", 1)
+	}
 
 	// Create JWT token
-	tk := &Token{UserID: user.ID, IsAdmin: user.IsAdmin}
+	tk := &Token{UserID: user.ID, IsAdmin: user.IsAdmin,
+		SubscriptionTypeID: user.SubscriptionTypeID, SubscriptionExpired: IsExpired}
+
+	tk.ExpiresAt = time.Now().Add(time.Hour * 72).Unix() // valid for 3 days
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 	tokenString, _ := token.SignedString([]byte(os.Getenv("token_password")))
 

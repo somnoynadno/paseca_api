@@ -53,7 +53,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 			return
 		}
 
-		if tk.ExpiresAt > time.Now().Unix() { // token is expired
+		if tk.ExpiresAt < time.Now().Unix() { // token is expired
 			u.HandleUnauthorized(w, errors.New("token is expired"))
 			return
 		}
