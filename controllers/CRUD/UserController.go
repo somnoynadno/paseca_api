@@ -92,6 +92,7 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 	newUser.SubscriptionType = models.SubscriptionType{}
 	newUser.SubscriptionStatus = models.SubscriptionStatus{}
 
+	db.Model(&User).Update("is_admin", newUser.IsAdmin)
 	err = db.Model(&User).Updates(newUser).Error
 
 	if err != nil {

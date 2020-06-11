@@ -98,6 +98,7 @@ var BeeFamilyUpdate = func(w http.ResponseWriter, r *http.Request) {
 	newBeeFamily.Parent1 = BeeFamily.Parent1
 	newBeeFamily.Parent2 = BeeFamily.Parent2
 
+	db.Model(&BeeFamily).Update("is_control", newBeeFamily.IsControl)
 	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
 
 	if err != nil {
