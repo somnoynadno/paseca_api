@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var BeeFamilyStatusCreate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFamilyStatus := &models.BeeFamilyStatus{}
-	err := json.NewDecoder(r.Body).Decode(BeeFamilyStatus)
+var SwarmCreate = func(w http.ResponseWriter, r *http.Request) {
+	Swarm := &models.Swarm{}
+	err := json.NewDecoder(r.Body).Decode(Swarm)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var BeeFamilyStatusCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(BeeFamilyStatus).Error
+	err = db.Create(Swarm).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(BeeFamilyStatus)
+		res, _ := json.Marshal(Swarm)
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFamilyStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	BeeFamilyStatus := &models.BeeFamilyStatus{}
+var SwarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	Swarm := &models.Swarm{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFamilyStatus, id).Error
+	err := db.Preload("SwarmStatus").Preload("BeeFamily").First(&Swarm, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var BeeFamilyStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(BeeFamilyStatus)
+	res, err := json.Marshal(Swarm)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if BeeFamilyStatus.ID == 0 {
+	} else if Swarm.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFamilyStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFamilyStatus := &models.BeeFamilyStatus{}
+var SwarmUpdate = func(w http.ResponseWriter, r *http.Request) {
+	Swarm := &models.Swarm{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFamilyStatus, id).Error
+	err := db.First(&Swarm, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,18 @@ var BeeFamilyStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newBeeFamilyStatus := &models.BeeFamilyStatus{}
-	err = json.NewDecoder(r.Body).Decode(newBeeFamilyStatus)
+	newSwarm := &models.Swarm{}
+	err = json.NewDecoder(r.Body).Decode(newSwarm)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&BeeFamilyStatus).Updates(newBeeFamilyStatus).Error
+	newSwarm.SwarmStatus = Swarm.SwarmStatus
+	newSwarm.BeeFamily = Swarm.BeeFamily
+
+	err = db.Model(&Swarm).Updates(newSwarm).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +99,12 @@ var BeeFamilyStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFamilyStatusDelete = func(w http.ResponseWriter, r *http.Request) {
+var SwarmDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.BeeFamilyStatus{}, id).Error
+	err := db.Delete(&models.Swarm{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +113,8 @@ var BeeFamilyStatusDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFamilyStatusQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFamilyStatus
+var SwarmQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.Swarm
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,7 +129,8 @@ var BeeFamilyStatusQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("SwarmStatus").Preload("BeeFamily").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -138,7 +142,7 @@ var BeeFamilyStatusQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.BeeFamilyStatus{}).Count(&count)
+		db.Model(&models.Swarm{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

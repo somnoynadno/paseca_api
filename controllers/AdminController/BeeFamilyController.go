@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var UserCreate = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
-	err := json.NewDecoder(r.Body).Decode(User)
+var BeeFamilyCreate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFamily := &models.BeeFamily{}
+	err := json.NewDecoder(r.Body).Decode(BeeFamily)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,25 +23,27 @@ var UserCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(User).Error
+	err = db.Create(BeeFamily).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(User)
+		res, _ := json.Marshal(BeeFamily)
 		u.RespondJSON(w, res)
 	}
 }
 
-var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
+var BeeFamilyRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	BeeFamily := &models.BeeFamily{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
-		Preload("BeeFarms").First(&User, id).Error
+	err := db.Preload("BeeFarm").Preload("BeeBreed").Preload("BeeFamilyStatus").
+		Preload("Hive").Preload("HoneyHarvests").Preload("BeeDiseases").
+		Preload("Parent1").Preload("Parent2").Preload("ControlHarvests").
+		First(&BeeFamily, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -52,24 +54,24 @@ var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(User)
+	res, err := json.Marshal(BeeFamily)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if User.ID == 0 {
+	} else if BeeFamily.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
+var BeeFamilyUpdate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFamily := &models.BeeFamily{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&User, id).Error
+	err := db.First(&BeeFamily, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -80,8 +82,8 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser := &models.User{}
-	err = json.NewDecoder(r.Body).Decode(newUser)
+	newBeeFamily := &models.BeeFamily{}
+	err = json.NewDecoder(r.Body).Decode(newBeeFamily)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -89,11 +91,15 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newUser.SubscriptionType = models.SubscriptionType{}
-	newUser.SubscriptionStatus = models.SubscriptionStatus{}
+	newBeeFamily.BeeFarm = BeeFamily.BeeFarm
+	newBeeFamily.BeeBreed = BeeFamily.BeeBreed
+	newBeeFamily.BeeFamilyStatus = BeeFamily.BeeFamilyStatus
+	newBeeFamily.Hive = BeeFamily.Hive
+	newBeeFamily.Parent1 = BeeFamily.Parent1
+	newBeeFamily.Parent2 = BeeFamily.Parent2
 
-	db.Model(&User).Update("is_admin", newUser.IsAdmin)
-	err = db.Model(&User).Updates(newUser).Error
+	db.Model(&BeeFamily).Update("is_control", newBeeFamily.IsControl)
+	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -102,12 +108,12 @@ var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var UserDelete = func(w http.ResponseWriter, r *http.Request) {
+var BeeFamilyDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.User{}, id).Error
+	err := db.Delete(&models.BeeFamily{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -116,8 +122,8 @@ var UserDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var UserQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.User
+var BeeFamilyQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFamily
 	var count string
 
 	order := r.FormValue("_order")
@@ -132,7 +138,9 @@ var UserQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
+	// базе данных пиздец
+	err := db.Preload("BeeFarm").Preload("BeeBreed").Preload("BeeFamilyStatus").
+		Preload("Hive").Preload("Parent1").Preload("Parent2").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
@@ -145,7 +153,7 @@ var UserQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.User{}).Count(&count)
+		db.Model(&models.BeeFamily{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

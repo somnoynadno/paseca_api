@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var SwarmCreate = func(w http.ResponseWriter, r *http.Request) {
-	Swarm := &models.Swarm{}
-	err := json.NewDecoder(r.Body).Decode(Swarm)
+var HiveCreate = func(w http.ResponseWriter, r *http.Request) {
+	Hive := &models.Hive{}
+	err := json.NewDecoder(r.Body).Decode(Hive)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,25 @@ var SwarmCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(Swarm).Error
+	err = db.Create(Hive).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(Swarm)
+		res, _ := json.Marshal(Hive)
 		u.RespondJSON(w, res)
 	}
 }
 
-var SwarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	Swarm := &models.Swarm{}
+var HiveRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	Hive := &models.Hive{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("SwarmStatus").Preload("BeeFamily").First(&Swarm, id).Error
+	err := db.Preload("HiveFormat").
+		Preload("BeeFarm").Preload("HiveFrameType").First(&Hive, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +52,24 @@ var SwarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(Swarm)
+	res, err := json.Marshal(Hive)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if Swarm.ID == 0 {
+	} else if Hive.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var SwarmUpdate = func(w http.ResponseWriter, r *http.Request) {
-	Swarm := &models.Swarm{}
+var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
+	Hive := &models.Hive{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&Swarm, id).Error
+	err := db.First(&Hive, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,18 +80,19 @@ var SwarmUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSwarm := &models.Swarm{}
-	err = json.NewDecoder(r.Body).Decode(newSwarm)
+	newHive := &models.Hive{}
+	err = json.NewDecoder(r.Body).Decode(newHive)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	newSwarm.SwarmStatus = Swarm.SwarmStatus
-	newSwarm.BeeFamily = Swarm.BeeFamily
+	// do NOT update recursively
+	newHive.HiveFormat = Hive.HiveFormat
+	newHive.HiveFrameType = Hive.HiveFrameType
 
-	err = db.Model(&Swarm).Updates(newSwarm).Error
+	err = db.Model(&Hive).Updates(newHive).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -99,12 +101,12 @@ var SwarmUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SwarmDelete = func(w http.ResponseWriter, r *http.Request) {
+var HiveDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.Swarm{}, id).Error
+	err := db.Delete(&models.Hive{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -113,8 +115,8 @@ var SwarmDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SwarmQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.Swarm
+var HiveQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.Hive
 	var count string
 
 	order := r.FormValue("_order")
@@ -129,7 +131,7 @@ var SwarmQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("SwarmStatus").Preload("BeeFamily").
+	err := db.Preload("HiveFormat").Preload("HiveFrameType").Preload("BeeFarm").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
@@ -142,7 +144,7 @@ var SwarmQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.Swarm{}).Count(&count)
+		db.Model(&models.Hive{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

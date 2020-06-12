@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var SubscriptionStatusCreate = func(w http.ResponseWriter, r *http.Request) {
-	SubscriptionStatus := &models.SubscriptionStatus{}
-	err := json.NewDecoder(r.Body).Decode(SubscriptionStatus)
+var WikiSectionCreate = func(w http.ResponseWriter, r *http.Request) {
+	WikiSection := &models.WikiSection{}
+	err := json.NewDecoder(r.Body).Decode(WikiSection)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var SubscriptionStatusCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(SubscriptionStatus).Error
+	err = db.Create(WikiSection).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(SubscriptionStatus)
+		res, _ := json.Marshal(WikiSection)
 		u.RespondJSON(w, res)
 	}
 }
 
-var SubscriptionStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	SubscriptionStatus := &models.SubscriptionStatus{}
+var WikiSectionRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	WikiSection := &models.WikiSection{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&SubscriptionStatus, id).Error
+	err := db.First(&WikiSection, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var SubscriptionStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(SubscriptionStatus)
+	res, err := json.Marshal(WikiSection)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if SubscriptionStatus.ID == 0 {
+	} else if WikiSection.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var SubscriptionStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
-	SubscriptionStatus := &models.SubscriptionStatus{}
+var WikiSectionUpdate = func(w http.ResponseWriter, r *http.Request) {
+	WikiSection := &models.WikiSection{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&SubscriptionStatus, id).Error
+	err := db.First(&WikiSection, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var SubscriptionStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSubscriptionStatus := &models.SubscriptionStatus{}
-	err = json.NewDecoder(r.Body).Decode(newSubscriptionStatus)
+	newWikiSection := &models.WikiSection{}
+	err = json.NewDecoder(r.Body).Decode(newWikiSection)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&SubscriptionStatus).Updates(newSubscriptionStatus).Error
+	err = db.Model(&WikiSection).Updates(newWikiSection).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var SubscriptionStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SubscriptionStatusDelete = func(w http.ResponseWriter, r *http.Request) {
+var WikiSectionDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.SubscriptionStatus{}, id).Error
+	err := db.Delete(&models.WikiSection{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var SubscriptionStatusDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SubscriptionStatusQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.SubscriptionStatus
+var WikiSectionQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.WikiSection
 	var count string
 
 	order := r.FormValue("_order")
@@ -138,7 +138,7 @@ var SubscriptionStatusQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.SubscriptionStatus{}).Count(&count)
+		db.Model(&models.WikiSection{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

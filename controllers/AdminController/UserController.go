@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var FamilyDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
-	FamilyDisease := &models.FamilyDisease{}
-	err := json.NewDecoder(r.Body).Decode(FamilyDisease)
+var UserCreate = func(w http.ResponseWriter, r *http.Request) {
+	User := &models.User{}
+	err := json.NewDecoder(r.Body).Decode(User)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,25 @@ var FamilyDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(FamilyDisease).Error
+	err = db.Create(User).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(FamilyDisease)
+		res, _ := json.Marshal(User)
 		u.RespondJSON(w, res)
 	}
 }
 
-var FamilyDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	FamilyDisease := &models.FamilyDisease{}
+var UserRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	User := &models.User{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").Preload("BeeDisease").First(&FamilyDisease, id).Error
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
+		Preload("BeeFarms").First(&User, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +52,24 @@ var FamilyDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(FamilyDisease)
+	res, err := json.Marshal(User)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if FamilyDisease.ID == 0 {
+	} else if User.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
-	FamilyDisease := &models.FamilyDisease{}
+var UserUpdate = func(w http.ResponseWriter, r *http.Request) {
+	User := &models.User{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&FamilyDisease, id).Error
+	err := db.First(&User, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,8 +80,8 @@ var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newFamilyDisease := &models.FamilyDisease{}
-	err = json.NewDecoder(r.Body).Decode(newFamilyDisease)
+	newUser := &models.User{}
+	err = json.NewDecoder(r.Body).Decode(newUser)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -88,10 +89,11 @@ var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newFamilyDisease.BeeFamily = models.BeeFamily{}
-	newFamilyDisease.BeeDisease = models.BeeDisease{}
+	newUser.SubscriptionType = models.SubscriptionType{}
+	newUser.SubscriptionStatus = models.SubscriptionStatus{}
 
-	err = db.Model(&FamilyDisease).Updates(newFamilyDisease).Error
+	db.Model(&User).Update("is_admin", newUser.IsAdmin)
+	err = db.Model(&User).Updates(newUser).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -100,12 +102,12 @@ var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var FamilyDiseaseDelete = func(w http.ResponseWriter, r *http.Request) {
+var UserDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.FamilyDisease{}, id).Error
+	err := db.Delete(&models.User{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -114,8 +116,8 @@ var FamilyDiseaseDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var FamilyDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.FamilyDisease
+var UserQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.User
 	var count string
 
 	order := r.FormValue("_order")
@@ -130,7 +132,7 @@ var FamilyDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").Preload("BeeDisease").
+	err := db.Preload("SubscriptionStatus").Preload("SubscriptionType").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
@@ -143,7 +145,7 @@ var FamilyDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.FamilyDisease{}).Count(&count)
+		db.Model(&models.User{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

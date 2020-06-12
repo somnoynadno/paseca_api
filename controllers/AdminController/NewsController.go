@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var SwarmStatusCreate = func(w http.ResponseWriter, r *http.Request) {
-	SwarmStatus := &models.SwarmStatus{}
-	err := json.NewDecoder(r.Body).Decode(SwarmStatus)
+var NewsCreate = func(w http.ResponseWriter, r *http.Request) {
+	News := &models.News{}
+	err := json.NewDecoder(r.Body).Decode(News)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var SwarmStatusCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(SwarmStatus).Error
+	err = db.Create(News).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(SwarmStatus)
+		res, _ := json.Marshal(News)
 		u.RespondJSON(w, res)
 	}
 }
 
-var SwarmStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	SwarmStatus := &models.SwarmStatus{}
+var NewsRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	News := &models.News{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&SwarmStatus, id).Error
+	err := db.First(&News, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var SwarmStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(SwarmStatus)
+	res, err := json.Marshal(News)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if SwarmStatus.ID == 0 {
+	} else if News.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var SwarmStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
-	SwarmStatus := &models.SwarmStatus{}
+var NewsUpdate = func(w http.ResponseWriter, r *http.Request) {
+	News := &models.News{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&SwarmStatus, id).Error
+	err := db.First(&News, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var SwarmStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSwarmStatus := &models.SwarmStatus{}
-	err = json.NewDecoder(r.Body).Decode(newSwarmStatus)
+	newNews := &models.News{}
+	err = json.NewDecoder(r.Body).Decode(newNews)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&SwarmStatus).Updates(newSwarmStatus).Error
+	err = db.Model(&News).Updates(newNews).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var SwarmStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SwarmStatusDelete = func(w http.ResponseWriter, r *http.Request) {
+var NewsDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.SwarmStatus{}, id).Error
+	err := db.Delete(&models.News{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var SwarmStatusDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var SwarmStatusQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.SwarmStatus
+var NewsQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.News
 	var count string
 
 	order := r.FormValue("_order")
@@ -138,7 +138,7 @@ var SwarmStatusQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.SwarmStatus{}).Count(&count)
+		db.Model(&models.News{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

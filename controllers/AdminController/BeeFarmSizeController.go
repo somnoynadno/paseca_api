@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var WikiPageCreate = func(w http.ResponseWriter, r *http.Request) {
-	WikiPage := &models.WikiPage{}
-	err := json.NewDecoder(r.Body).Decode(WikiPage)
+var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmSize := &models.BeeFarmSize{}
+	err := json.NewDecoder(r.Body).Decode(BeeFarmSize)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var WikiPageCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(WikiPage).Error
+	err = db.Create(BeeFarmSize).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(WikiPage)
+		res, _ := json.Marshal(BeeFarmSize)
 		u.RespondJSON(w, res)
 	}
 }
 
-var WikiPageRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	WikiPage := &models.WikiPage{}
+var BeeFarmSizeRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmSize := &models.BeeFarmSize{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("WikiSection").First(&WikiPage, id).Error
+	err := db.First(&BeeFarmSize, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var WikiPageRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(WikiPage)
+	res, err := json.Marshal(BeeFarmSize)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if WikiPage.ID == 0 {
+	} else if BeeFarmSize.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var WikiPageUpdate = func(w http.ResponseWriter, r *http.Request) {
-	WikiPage := &models.WikiPage{}
+var BeeFarmSizeUpdate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmSize := &models.BeeFarmSize{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&WikiPage, id).Error
+	err := db.First(&BeeFarmSize, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,18 +79,15 @@ var WikiPageUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWikiPage := &models.WikiPage{}
-	err = json.NewDecoder(r.Body).Decode(newWikiPage)
+	newBeeFarmSize := &models.BeeFarmSize{}
+	err = json.NewDecoder(r.Body).Decode(newBeeFarmSize)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	// do NOT update recursively
-	newWikiPage.WikiSection = WikiPage.WikiSection
-
-	err = db.Model(&WikiPage).Updates(newWikiPage).Error
+	err = db.Model(&BeeFarmSize).Updates(newBeeFarmSize).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -99,12 +96,12 @@ var WikiPageUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var WikiPageDelete = func(w http.ResponseWriter, r *http.Request) {
+var BeeFarmSizeDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.WikiPage{}, id).Error
+	err := db.Delete(&models.BeeFarmSize{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -113,8 +110,8 @@ var WikiPageDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var WikiPageQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.WikiPage
+var BeeFarmSizeQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFarmSize
 	var count string
 
 	order := r.FormValue("_order")
@@ -129,8 +126,7 @@ var WikiPageQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("WikiSection").Order(fmt.Sprintf("%s %s", sort, order)).
-		Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -142,7 +138,7 @@ var WikiPageQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.WikiPage{}).Count(&count)
+		db.Model(&models.BeeFarmSize{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
-	HiveFormat := &models.HiveFormat{}
-	err := json.NewDecoder(r.Body).Decode(HiveFormat)
+var HoneyHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
+	HoneyHarvest := &models.HoneyHarvest{}
+	err := json.NewDecoder(r.Body).Decode(HoneyHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(HiveFormat).Error
+	err = db.Create(HoneyHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(HiveFormat)
+		res, _ := json.Marshal(HoneyHarvest)
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveFormatRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	HiveFormat := &models.HiveFormat{}
+var HoneyHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	HoneyHarvest := &models.HoneyHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HiveFormat, id).Error
+	err := db.Preload("HoneyType").Preload("BeeFamily").First(&HoneyHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var HiveFormatRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(HiveFormat)
+	res, err := json.Marshal(HoneyHarvest)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if HiveFormat.ID == 0 {
+	} else if HoneyHarvest.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveFormatUpdate = func(w http.ResponseWriter, r *http.Request) {
-	HiveFormat := &models.HiveFormat{}
+var HoneyHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
+	HoneyHarvest := &models.HoneyHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HiveFormat, id).Error
+	err := db.First(&HoneyHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,17 @@ var HiveFormatUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHiveFormat := &models.HiveFormat{}
-	err = json.NewDecoder(r.Body).Decode(newHiveFormat)
+	newHoneyHarvest := &models.HoneyHarvest{}
+	err = json.NewDecoder(r.Body).Decode(newHoneyHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&HiveFormat).Updates(newHiveFormat).Error
+	newHoneyHarvest.HoneyType = HoneyHarvest.HoneyType
+
+	err = db.Model(&HoneyHarvest).Updates(newHoneyHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +98,12 @@ var HiveFormatUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFormatDelete = func(w http.ResponseWriter, r *http.Request) {
+var HoneyHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.HiveFormat{}, id).Error
+	err := db.Delete(&models.HoneyHarvest{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +112,8 @@ var HiveFormatDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFormatQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFormat
+var HoneyHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HoneyHarvest
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,7 +128,8 @@ var HiveFormatQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("HoneyType").Preload("BeeFamily").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -138,7 +141,7 @@ var HiveFormatQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.HiveFormat{}).Count(&count)
+		db.Model(&models.HoneyHarvest{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

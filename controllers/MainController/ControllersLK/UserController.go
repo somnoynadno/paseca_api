@@ -1,4 +1,4 @@
-package OtherControllers
+package ControllersLK
 
 import (
 	"encoding/json"

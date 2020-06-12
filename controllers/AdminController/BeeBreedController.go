@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var WikiSectionCreate = func(w http.ResponseWriter, r *http.Request) {
-	WikiSection := &models.WikiSection{}
-	err := json.NewDecoder(r.Body).Decode(WikiSection)
+var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
+	BeeBreed := &models.BeeBreed{}
+	err := json.NewDecoder(r.Body).Decode(BeeBreed)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var WikiSectionCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(WikiSection).Error
+	err = db.Create(BeeBreed).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(WikiSection)
+		res, _ := json.Marshal(BeeBreed)
 		u.RespondJSON(w, res)
 	}
 }
 
-var WikiSectionRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	WikiSection := &models.WikiSection{}
+var BeeBreedRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	BeeBreed := &models.BeeBreed{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&WikiSection, id).Error
+	err := db.First(&BeeBreed, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var WikiSectionRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(WikiSection)
+	res, err := json.Marshal(BeeBreed)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if WikiSection.ID == 0 {
+	} else if BeeBreed.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var WikiSectionUpdate = func(w http.ResponseWriter, r *http.Request) {
-	WikiSection := &models.WikiSection{}
+var BeeBreedUpdate = func(w http.ResponseWriter, r *http.Request) {
+	BeeBreed := &models.BeeBreed{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&WikiSection, id).Error
+	err := db.First(&BeeBreed, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var WikiSectionUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWikiSection := &models.WikiSection{}
-	err = json.NewDecoder(r.Body).Decode(newWikiSection)
+	newBeeBreed := &models.BeeBreed{}
+	err = json.NewDecoder(r.Body).Decode(newBeeBreed)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&WikiSection).Updates(newWikiSection).Error
+	err = db.Model(&BeeBreed).Updates(newBeeBreed).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var WikiSectionUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var WikiSectionDelete = func(w http.ResponseWriter, r *http.Request) {
+var BeeBreedDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.WikiSection{}, id).Error
+	err := db.Delete(&models.BeeBreed{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var WikiSectionDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var WikiSectionQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.WikiSection
+var BeeBreedQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeBreed
 	var count string
 
 	order := r.FormValue("_order")
@@ -138,7 +138,7 @@ var WikiSectionQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.WikiSection{}).Count(&count)
+		db.Model(&models.BeeBreed{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

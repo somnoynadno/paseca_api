@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var ReminderCreate = func(w http.ResponseWriter, r *http.Request) {
-	Reminder := &models.Reminder{}
-	err := json.NewDecoder(r.Body).Decode(Reminder)
+var BeeFarmTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmType := &models.BeeFarmType{}
+	err := json.NewDecoder(r.Body).Decode(BeeFarmType)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var ReminderCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(Reminder).Error
+	err = db.Create(BeeFarmType).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(Reminder)
+		res, _ := json.Marshal(BeeFarmType)
 		u.RespondJSON(w, res)
 	}
 }
 
-var ReminderRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	Reminder := &models.Reminder{}
+var BeeFarmTypeRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmType := &models.BeeFarmType{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").First(&Reminder, id).Error
+	err := db.First(&BeeFarmType, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var ReminderRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(Reminder)
+	res, err := json.Marshal(BeeFarmType)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if Reminder.ID == 0 {
+	} else if BeeFarmType.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
-	Reminder := &models.Reminder{}
+var BeeFarmTypeUpdate = func(w http.ResponseWriter, r *http.Request) {
+	BeeFarmType := &models.BeeFarmType{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&Reminder, id).Error
+	err := db.First(&BeeFarmType, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newReminder := &models.Reminder{}
-	err = json.NewDecoder(r.Body).Decode(newReminder)
+	newBeeFarmType := &models.BeeFarmType{}
+	err = json.NewDecoder(r.Body).Decode(newBeeFarmType)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&Reminder).Updates(newReminder).Error
+	err = db.Model(&BeeFarmType).Updates(newBeeFarmType).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var ReminderDelete = func(w http.ResponseWriter, r *http.Request) {
+var BeeFarmTypeDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.Reminder{}, id).Error
+	err := db.Delete(&models.BeeFarmType{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var ReminderDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var ReminderQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.Reminder
+var BeeFarmTypeQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.BeeFarmType
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,8 +126,7 @@ var ReminderQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -139,7 +138,7 @@ var ReminderQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.Reminder{}).Count(&count)
+		db.Model(&models.BeeFarmType{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

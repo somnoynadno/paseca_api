@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var HoneySaleCreate = func(w http.ResponseWriter, r *http.Request) {
-	HoneySale := &models.HoneySale{}
-	err := json.NewDecoder(r.Body).Decode(HoneySale)
+var SwarmStatusCreate = func(w http.ResponseWriter, r *http.Request) {
+	SwarmStatus := &models.SwarmStatus{}
+	err := json.NewDecoder(r.Body).Decode(SwarmStatus)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var HoneySaleCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(HoneySale).Error
+	err = db.Create(SwarmStatus).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(HoneySale)
+		res, _ := json.Marshal(SwarmStatus)
 		u.RespondJSON(w, res)
 	}
 }
 
-var HoneySaleRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	HoneySale := &models.HoneySale{}
+var SwarmStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	SwarmStatus := &models.SwarmStatus{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("HoneyType").Preload("BeeFarm").First(&HoneySale, id).Error
+	err := db.First(&SwarmStatus, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var HoneySaleRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(HoneySale)
+	res, err := json.Marshal(SwarmStatus)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if HoneySale.ID == 0 {
+	} else if SwarmStatus.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var HoneySaleUpdate = func(w http.ResponseWriter, r *http.Request) {
-	HoneySale := &models.HoneySale{}
+var SwarmStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
+	SwarmStatus := &models.SwarmStatus{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HoneySale, id).Error
+	err := db.First(&SwarmStatus, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,18 +79,15 @@ var HoneySaleUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHoneySale := &models.HoneySale{}
-	err = json.NewDecoder(r.Body).Decode(newHoneySale)
+	newSwarmStatus := &models.SwarmStatus{}
+	err = json.NewDecoder(r.Body).Decode(newSwarmStatus)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	// do NOT update recursively
-	newHoneySale.HoneyType = HoneySale.HoneyType
-
-	err = db.Model(&HoneySale).Updates(newHoneySale).Error
+	err = db.Model(&SwarmStatus).Updates(newSwarmStatus).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -99,12 +96,12 @@ var HoneySaleUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HoneySaleDelete = func(w http.ResponseWriter, r *http.Request) {
+var SwarmStatusDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.HoneySale{}, id).Error
+	err := db.Delete(&models.SwarmStatus{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -113,8 +110,8 @@ var HoneySaleDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HoneySaleQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HoneySale
+var SwarmStatusQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.SwarmStatus
 	var count string
 
 	order := r.FormValue("_order")
@@ -129,8 +126,7 @@ var HoneySaleQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("HoneyType").Preload("BeeFarm").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -142,7 +138,7 @@ var HoneySaleQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.HoneySale{}).Count(&count)
+		db.Model(&models.SwarmStatus{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

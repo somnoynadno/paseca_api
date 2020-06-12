@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var ControlHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
-	ControlHarvest := &models.ControlHarvest{}
-	err := json.NewDecoder(r.Body).Decode(ControlHarvest)
+var SubscriptionStatusCreate = func(w http.ResponseWriter, r *http.Request) {
+	SubscriptionStatus := &models.SubscriptionStatus{}
+	err := json.NewDecoder(r.Body).Decode(SubscriptionStatus)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var ControlHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(ControlHarvest).Error
+	err = db.Create(SubscriptionStatus).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(ControlHarvest)
+		res, _ := json.Marshal(SubscriptionStatus)
 		u.RespondJSON(w, res)
 	}
 }
 
-var ControlHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	ControlHarvest := &models.ControlHarvest{}
+var SubscriptionStatusRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	SubscriptionStatus := &models.SubscriptionStatus{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").First(&ControlHarvest, id).Error
+	err := db.First(&SubscriptionStatus, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var ControlHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(ControlHarvest)
+	res, err := json.Marshal(SubscriptionStatus)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if ControlHarvest.ID == 0 {
+	} else if SubscriptionStatus.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var ControlHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
-	ControlHarvest := &models.ControlHarvest{}
+var SubscriptionStatusUpdate = func(w http.ResponseWriter, r *http.Request) {
+	SubscriptionStatus := &models.SubscriptionStatus{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&ControlHarvest, id).Error
+	err := db.First(&SubscriptionStatus, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var ControlHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newControlHarvest := &models.ControlHarvest{}
-	err = json.NewDecoder(r.Body).Decode(newControlHarvest)
+	newSubscriptionStatus := &models.SubscriptionStatus{}
+	err = json.NewDecoder(r.Body).Decode(newSubscriptionStatus)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&ControlHarvest).Updates(newControlHarvest).Error
+	err = db.Model(&SubscriptionStatus).Updates(newSubscriptionStatus).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var ControlHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var ControlHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
+var SubscriptionStatusDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.ControlHarvest{}, id).Error
+	err := db.Delete(&models.SubscriptionStatus{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var ControlHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var ControlHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.ControlHarvest
+var SubscriptionStatusQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.SubscriptionStatus
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,8 +126,7 @@ var ControlHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFamily").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -139,7 +138,7 @@ var ControlHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.ControlHarvest{}).Count(&count)
+		db.Model(&models.SubscriptionStatus{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

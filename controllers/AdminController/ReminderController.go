@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var BeeDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
-	BeeDisease := &models.BeeDisease{}
-	err := json.NewDecoder(r.Body).Decode(BeeDisease)
+var ReminderCreate = func(w http.ResponseWriter, r *http.Request) {
+	Reminder := &models.Reminder{}
+	err := json.NewDecoder(r.Body).Decode(Reminder)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var BeeDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(BeeDisease).Error
+	err = db.Create(Reminder).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(BeeDisease)
+		res, _ := json.Marshal(Reminder)
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	BeeDisease := &models.BeeDisease{}
+var ReminderRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	Reminder := &models.Reminder{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeDisease, id).Error
+	err := db.Preload("BeeFarm").First(&Reminder, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var BeeDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(BeeDisease)
+	res, err := json.Marshal(Reminder)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if BeeDisease.ID == 0 {
+	} else if Reminder.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
-	BeeDisease := &models.BeeDisease{}
+var ReminderUpdate = func(w http.ResponseWriter, r *http.Request) {
+	Reminder := &models.Reminder{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeDisease, id).Error
+	err := db.First(&Reminder, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var BeeDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newBeeDisease := &models.BeeDisease{}
-	err = json.NewDecoder(r.Body).Decode(newBeeDisease)
+	newReminder := &models.Reminder{}
+	err = json.NewDecoder(r.Body).Decode(newReminder)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&BeeDisease).Updates(newBeeDisease).Error
+	err = db.Model(&Reminder).Updates(newReminder).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var BeeDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeDiseaseDelete = func(w http.ResponseWriter, r *http.Request) {
+var ReminderDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.BeeDisease{}, id).Error
+	err := db.Delete(&models.Reminder{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var BeeDiseaseDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeDisease
+var ReminderQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.Reminder
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,7 +126,8 @@ var BeeDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("BeeFarm").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -138,7 +139,7 @@ var BeeDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.BeeDisease{}).Count(&count)
+		db.Model(&models.Reminder{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

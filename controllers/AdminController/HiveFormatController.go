@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var PollenHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
-	PollenHarvest := &models.PollenHarvest{}
-	err := json.NewDecoder(r.Body).Decode(PollenHarvest)
+var HiveFormatCreate = func(w http.ResponseWriter, r *http.Request) {
+	HiveFormat := &models.HiveFormat{}
+	err := json.NewDecoder(r.Body).Decode(HiveFormat)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var PollenHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(PollenHarvest).Error
+	err = db.Create(HiveFormat).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(PollenHarvest)
+		res, _ := json.Marshal(HiveFormat)
 		u.RespondJSON(w, res)
 	}
 }
 
-var PollenHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	PollenHarvest := &models.PollenHarvest{}
+var HiveFormatRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	HiveFormat := &models.HiveFormat{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").First(&PollenHarvest, id).Error
+	err := db.First(&HiveFormat, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var PollenHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(PollenHarvest)
+	res, err := json.Marshal(HiveFormat)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if PollenHarvest.ID == 0 {
+	} else if HiveFormat.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var PollenHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
-	PollenHarvest := &models.PollenHarvest{}
+var HiveFormatUpdate = func(w http.ResponseWriter, r *http.Request) {
+	HiveFormat := &models.HiveFormat{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&PollenHarvest, id).Error
+	err := db.First(&HiveFormat, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var PollenHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newPollenHarvest := &models.PollenHarvest{}
-	err = json.NewDecoder(r.Body).Decode(newPollenHarvest)
+	newHiveFormat := &models.HiveFormat{}
+	err = json.NewDecoder(r.Body).Decode(newHiveFormat)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&PollenHarvest).Updates(newPollenHarvest).Error
+	err = db.Model(&HiveFormat).Updates(newHiveFormat).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var PollenHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var PollenHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
+var HiveFormatDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.PollenHarvest{}, id).Error
+	err := db.Delete(&models.HiveFormat{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var PollenHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var PollenHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.PollenHarvest
+var HiveFormatQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HiveFormat
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,8 +126,7 @@ var PollenHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("BeeFarm").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -139,7 +138,7 @@ var PollenHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.PollenHarvest{}).Count(&count)
+		db.Model(&models.HiveFormat{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

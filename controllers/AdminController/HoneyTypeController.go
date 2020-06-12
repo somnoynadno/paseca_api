@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarmSize := &models.BeeFarmSize{}
-	err := json.NewDecoder(r.Body).Decode(BeeFarmSize)
+var HoneyTypeCreate = func(w http.ResponseWriter, r *http.Request) {
+	HoneyType := &models.HoneyType{}
+	err := json.NewDecoder(r.Body).Decode(HoneyType)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var BeeFarmSizeCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(BeeFarmSize).Error
+	err = db.Create(HoneyType).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(BeeFarmSize)
+		res, _ := json.Marshal(HoneyType)
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFarmSizeRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarmSize := &models.BeeFarmSize{}
+var HoneyTypeRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	HoneyType := &models.HoneyType{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFarmSize, id).Error
+	err := db.First(&HoneyType, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var BeeFarmSizeRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(BeeFarmSize)
+	res, err := json.Marshal(HoneyType)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if BeeFarmSize.ID == 0 {
+	} else if HoneyType.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFarmSizeUpdate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarmSize := &models.BeeFarmSize{}
+var HoneyTypeUpdate = func(w http.ResponseWriter, r *http.Request) {
+	HoneyType := &models.HoneyType{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFarmSize, id).Error
+	err := db.First(&HoneyType, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var BeeFarmSizeUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newBeeFarmSize := &models.BeeFarmSize{}
-	err = json.NewDecoder(r.Body).Decode(newBeeFarmSize)
+	newHoneyType := &models.HoneyType{}
+	err = json.NewDecoder(r.Body).Decode(newHoneyType)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&BeeFarmSize).Updates(newBeeFarmSize).Error
+	err = db.Model(&HoneyType).Updates(newHoneyType).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var BeeFarmSizeUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmSizeDelete = func(w http.ResponseWriter, r *http.Request) {
+var HoneyTypeDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.BeeFarmSize{}, id).Error
+	err := db.Delete(&models.HoneyType{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var BeeFarmSizeDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmSizeQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFarmSize
+var HoneyTypeQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.HoneyType
 	var count string
 
 	order := r.FormValue("_order")
@@ -138,7 +138,7 @@ var BeeFarmSizeQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.BeeFarmSize{}).Count(&count)
+		db.Model(&models.HoneyType{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

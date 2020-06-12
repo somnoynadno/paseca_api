@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var BeeFarmCreate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarm := &models.BeeFarm{}
-	err := json.NewDecoder(r.Body).Decode(BeeFarm)
+var ControlHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
+	ControlHarvest := &models.ControlHarvest{}
+	err := json.NewDecoder(r.Body).Decode(ControlHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,26 +23,24 @@ var BeeFarmCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(BeeFarm).Error
+	err = db.Create(ControlHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(BeeFarm)
+		res, _ := json.Marshal(ControlHarvest)
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarm := &models.BeeFarm{}
+var ControlHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	ControlHarvest := &models.ControlHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("User").Preload("BeeFarmType").Preload("BeeFarmSize").
-		Preload("Reminders").Preload("BeeFamilies").Preload("HoneySales").Preload("Hives").
-		First(&BeeFarm, id).Error
+	err := db.Preload("BeeFamily").First(&ControlHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -53,24 +51,24 @@ var BeeFarmRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(BeeFarm)
+	res, err := json.Marshal(ControlHarvest)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if BeeFarm.ID == 0 {
+	} else if ControlHarvest.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeFarmUpdate = func(w http.ResponseWriter, r *http.Request) {
-	BeeFarm := &models.BeeFarm{}
+var ControlHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
+	ControlHarvest := &models.ControlHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeFarm, id).Error
+	err := db.First(&ControlHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -81,20 +79,15 @@ var BeeFarmUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newBeeFarm := &models.BeeFarm{}
-	err = json.NewDecoder(r.Body).Decode(newBeeFarm)
+	newControlHarvest := &models.ControlHarvest{}
+	err = json.NewDecoder(r.Body).Decode(newControlHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	// do NOT update recursively
-	newBeeFarm.User = BeeFarm.User
-	newBeeFarm.BeeFarmType = models.BeeFarmType{}
-	newBeeFarm.BeeFarmSize = models.BeeFarmSize{}
-
-	err = db.Model(&BeeFarm).Updates(newBeeFarm).Error
+	err = db.Model(&ControlHarvest).Updates(newControlHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -103,12 +96,12 @@ var BeeFarmUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmDelete = func(w http.ResponseWriter, r *http.Request) {
+var ControlHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.BeeFarm{}, id).Error
+	err := db.Delete(&models.ControlHarvest{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -117,8 +110,8 @@ var BeeFarmDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeFarmQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeFarm
+var ControlHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.ControlHarvest
 	var count string
 
 	order := r.FormValue("_order")
@@ -133,7 +126,7 @@ var BeeFarmQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("User").Preload("BeeFarmType").Preload("BeeFarmSize").
+	err := db.Preload("BeeFamily").
 		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
@@ -146,7 +139,7 @@ var BeeFarmQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.BeeFarm{}).Count(&count)
+		db.Model(&models.ControlHarvest{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

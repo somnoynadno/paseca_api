@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var HiveFrameTypeCreate = func(w http.ResponseWriter, r *http.Request) {
-	HiveFrameType := &models.HiveFrameType{}
-	err := json.NewDecoder(r.Body).Decode(HiveFrameType)
+var FamilyDiseaseCreate = func(w http.ResponseWriter, r *http.Request) {
+	FamilyDisease := &models.FamilyDisease{}
+	err := json.NewDecoder(r.Body).Decode(FamilyDisease)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var HiveFrameTypeCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(HiveFrameType).Error
+	err = db.Create(FamilyDisease).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(HiveFrameType)
+		res, _ := json.Marshal(FamilyDisease)
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveFrameTypeRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	HiveFrameType := &models.HiveFrameType{}
+var FamilyDiseaseRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	FamilyDisease := &models.FamilyDisease{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HiveFrameType, id).Error
+	err := db.Preload("BeeFamily").Preload("BeeDisease").First(&FamilyDisease, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var HiveFrameTypeRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(HiveFrameType)
+	res, err := json.Marshal(FamilyDisease)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if HiveFrameType.ID == 0 {
+	} else if FamilyDisease.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveFrameTypeUpdate = func(w http.ResponseWriter, r *http.Request) {
-	HiveFrameType := &models.HiveFrameType{}
+var FamilyDiseaseUpdate = func(w http.ResponseWriter, r *http.Request) {
+	FamilyDisease := &models.FamilyDisease{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&HiveFrameType, id).Error
+	err := db.First(&FamilyDisease, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,19 @@ var HiveFrameTypeUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHiveFrameType := &models.HiveFrameType{}
-	err = json.NewDecoder(r.Body).Decode(newHiveFrameType)
+	newFamilyDisease := &models.FamilyDisease{}
+	err = json.NewDecoder(r.Body).Decode(newFamilyDisease)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&HiveFrameType).Updates(newHiveFrameType).Error
+	// do NOT update recursively
+	newFamilyDisease.BeeFamily = models.BeeFamily{}
+	newFamilyDisease.BeeDisease = models.BeeDisease{}
+
+	err = db.Model(&FamilyDisease).Updates(newFamilyDisease).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +100,12 @@ var HiveFrameTypeUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFrameTypeDelete = func(w http.ResponseWriter, r *http.Request) {
+var FamilyDiseaseDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.HiveFrameType{}, id).Error
+	err := db.Delete(&models.FamilyDisease{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +114,8 @@ var HiveFrameTypeDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveFrameTypeQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.HiveFrameType
+var FamilyDiseaseQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.FamilyDisease
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,7 +130,8 @@ var HiveFrameTypeQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("BeeFamily").Preload("BeeDisease").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -138,7 +143,7 @@ var HiveFrameTypeQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.HiveFrameType{}).Count(&count)
+		db.Model(&models.FamilyDisease{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

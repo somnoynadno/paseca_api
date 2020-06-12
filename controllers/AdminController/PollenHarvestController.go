@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
-	BeeBreed := &models.BeeBreed{}
-	err := json.NewDecoder(r.Body).Decode(BeeBreed)
+var PollenHarvestCreate = func(w http.ResponseWriter, r *http.Request) {
+	PollenHarvest := &models.PollenHarvest{}
+	err := json.NewDecoder(r.Body).Decode(PollenHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,24 +23,24 @@ var BeeBreedCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(BeeBreed).Error
+	err = db.Create(PollenHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(BeeBreed)
+		res, _ := json.Marshal(PollenHarvest)
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeBreedRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	BeeBreed := &models.BeeBreed{}
+var PollenHarvestRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	PollenHarvest := &models.PollenHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeBreed, id).Error
+	err := db.Preload("BeeFarm").First(&PollenHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -51,24 +51,24 @@ var BeeBreedRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(BeeBreed)
+	res, err := json.Marshal(PollenHarvest)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if BeeBreed.ID == 0 {
+	} else if PollenHarvest.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var BeeBreedUpdate = func(w http.ResponseWriter, r *http.Request) {
-	BeeBreed := &models.BeeBreed{}
+var PollenHarvestUpdate = func(w http.ResponseWriter, r *http.Request) {
+	PollenHarvest := &models.PollenHarvest{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&BeeBreed, id).Error
+	err := db.First(&PollenHarvest, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -79,15 +79,15 @@ var BeeBreedUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newBeeBreed := &models.BeeBreed{}
-	err = json.NewDecoder(r.Body).Decode(newBeeBreed)
+	newPollenHarvest := &models.PollenHarvest{}
+	err = json.NewDecoder(r.Body).Decode(newPollenHarvest)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
 
-	err = db.Model(&BeeBreed).Updates(newBeeBreed).Error
+	err = db.Model(&PollenHarvest).Updates(newPollenHarvest).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -96,12 +96,12 @@ var BeeBreedUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeBreedDelete = func(w http.ResponseWriter, r *http.Request) {
+var PollenHarvestDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.BeeBreed{}, id).Error
+	err := db.Delete(&models.PollenHarvest{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -110,8 +110,8 @@ var BeeBreedDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var BeeBreedQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.BeeBreed
+var PollenHarvestQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.PollenHarvest
 	var count string
 
 	order := r.FormValue("_order")
@@ -126,7 +126,8 @@ var BeeBreedQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("BeeFarm").
+		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -138,7 +139,7 @@ var BeeBreedQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.BeeBreed{}).Count(&count)
+		db.Model(&models.PollenHarvest{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}

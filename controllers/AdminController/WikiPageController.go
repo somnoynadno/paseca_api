@@ -1,4 +1,4 @@
-package CRUD
+package AdminController
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ import (
 	"strconv"
 )
 
-var HiveCreate = func(w http.ResponseWriter, r *http.Request) {
-	Hive := &models.Hive{}
-	err := json.NewDecoder(r.Body).Decode(Hive)
+var WikiPageCreate = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
+	err := json.NewDecoder(r.Body).Decode(WikiPage)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -23,25 +23,24 @@ var HiveCreate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := db.GetDB()
-	err = db.Create(Hive).Error
+	err = db.Create(WikiPage).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		res, _ := json.Marshal(Hive)
+		res, _ := json.Marshal(WikiPage)
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveRetrieve = func(w http.ResponseWriter, r *http.Request) {
-	Hive := &models.Hive{}
+var WikiPageRetrieve = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Preload("HiveFormat").
-		Preload("BeeFarm").Preload("HiveFrameType").First(&Hive, id).Error
+	err := db.Preload("WikiSection").First(&WikiPage, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -52,24 +51,24 @@ var HiveRetrieve = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(Hive)
+	res, err := json.Marshal(WikiPage)
 	if err != nil {
 		u.HandleBadRequest(w, err)
-	} else if Hive.ID == 0 {
+	} else if WikiPage.ID == 0 {
 		u.HandleNotFound(w)
 	} else {
 		u.RespondJSON(w, res)
 	}
 }
 
-var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
-	Hive := &models.Hive{}
+var WikiPageUpdate = func(w http.ResponseWriter, r *http.Request) {
+	WikiPage := &models.WikiPage{}
 
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.First(&Hive, id).Error
+	err := db.First(&WikiPage, id).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -80,8 +79,8 @@ var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHive := &models.Hive{}
-	err = json.NewDecoder(r.Body).Decode(newHive)
+	newWikiPage := &models.WikiPage{}
+	err = json.NewDecoder(r.Body).Decode(newWikiPage)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -89,10 +88,9 @@ var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do NOT update recursively
-	newHive.HiveFormat = Hive.HiveFormat
-	newHive.HiveFrameType = Hive.HiveFrameType
+	newWikiPage.WikiSection = WikiPage.WikiSection
 
-	err = db.Model(&Hive).Updates(newHive).Error
+	err = db.Model(&WikiPage).Updates(newWikiPage).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -101,12 +99,12 @@ var HiveUpdate = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveDelete = func(w http.ResponseWriter, r *http.Request) {
+var WikiPageDelete = func(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 
 	db := db.GetDB()
-	err := db.Delete(&models.Hive{}, id).Error
+	err := db.Delete(&models.WikiPage{}, id).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -115,8 +113,8 @@ var HiveDelete = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var HiveQuery = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.Hive
+var WikiPageQuery = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.WikiPage
 	var count string
 
 	order := r.FormValue("_order")
@@ -131,8 +129,8 @@ var HiveQuery = func(w http.ResponseWriter, r *http.Request) {
 	u.CheckOrderAndSortParams(&order, &sort)
 
 	db := db.GetDB()
-	err := db.Preload("HiveFormat").Preload("HiveFrameType").Preload("BeeFarm").
-		Order(fmt.Sprintf("%s %s", sort, order)).Offset(start).Limit(end + start).Find(&entities).Error
+	err := db.Preload("WikiSection").Order(fmt.Sprintf("%s %s", sort, order)).
+		Offset(start).Limit(end + start).Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -144,7 +142,7 @@ var HiveQuery = func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		u.HandleBadRequest(w, err)
 	} else {
-		db.Model(&models.Hive{}).Count(&count)
+		db.Model(&models.WikiPage{}).Count(&count)
 		u.SetTotalCountHeader(w, count)
 		u.RespondJSON(w, res)
 	}
