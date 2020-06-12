@@ -8,11 +8,11 @@ import (
 	u "paseca/utils"
 )
 
-var GetLastNews = func(w http.ResponseWriter, r *http.Request) {
-	var entities []models.News
+var GetSubscriptionTypes = func(w http.ResponseWriter, r *http.Request) {
+	var entities []models.SubscriptionType
 
 	db := db.GetDB()
-	err := db.Order("created_at desc").Limit(10).Find(&entities).Error
+	err := db.Order("price asc").Find(&entities).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -27,4 +27,5 @@ var GetLastNews = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+
 
