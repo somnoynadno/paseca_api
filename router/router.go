@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"paseca/controllers/AdminController"
 	"paseca/controllers/AuthController"
+	"paseca/controllers/MainController/AnalyticControllers"
 	"paseca/controllers/MainController/BeeFarmControllers"
 	"paseca/controllers/MainController/ControllersLK"
 	"paseca/controllers/MainController/CustomTypesControllers"
@@ -247,6 +248,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/honey_harvests", HarvestControllers.GetUsersHoneyHarvests).Methods("GET")
 	lk.HandleFunc("/honey_harvest", HarvestControllers.CreateHoneyHarvest).Methods("POST")
 	lk.HandleFunc("/honey_harvest/{id}", HarvestControllers.DeleteHoneyHarvest).Methods("DELETE")
+	lk.HandleFunc("/honey_harvest_stats", AnalyticControllers.GetHoneyHarvestsGroupByAmount).Methods("GET")
 
 	lk.HandleFunc("/honey_sales", HarvestControllers.GetUsersHoneySales).Methods("GET")
 	lk.HandleFunc("/honey_sale", HarvestControllers.CreateHoneySale).Methods("POST")

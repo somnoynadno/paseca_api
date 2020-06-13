@@ -17,6 +17,7 @@ type BeeFamilyShort struct {
 	ID          uint    `json:"id"`
 	Name        string  `json:"name"`
 	BeeFarmName string  `json:"bee_farm_name"`
+	IsControl   bool    `json:"is_control"`
 }
 
 var GetUsersBeeFamilies = func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ var GetUsersBeeFamilies = func(w http.ResponseWriter, r *http.Request) {
 	err := db.Table("bee_families").
 		Joins("join bee_farms on bee_farms.id = bee_families.bee_farm_id").
 		Joins("join users on users.id = bee_farms.user_id").
-		Select("bee_families.id, bee_families.name, bee_farms.name as bee_farm_name").
+		Select("bee_families.id, bee_families.name, bee_farms.name as bee_farm_name, bee_families.is_control").
 		Where("users.id = ? and bee_families.deleted_at is null", id).Scan(&entities).Error
 
 	if err != nil {
