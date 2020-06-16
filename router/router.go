@@ -186,6 +186,7 @@ func InitRouter() *mux.Router {
 
 	// AUTH PATHS
 	auth.HandleFunc("/login", AuthController.Authenticate).Methods("POST")
+	auth.HandleFunc("/register", AuthController.Registration).Methods("POST")
 
 	// LK PATHS
 	lk.HandleFunc("/bee_breeds", CustomTypesControllers.GetBeeBreeds).Methods("GET")
