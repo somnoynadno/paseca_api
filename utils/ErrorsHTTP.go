@@ -14,8 +14,15 @@ func HandleBadRequest(w http.ResponseWriter, err error) {
 
 // 401
 func HandleUnauthorized(w http.ResponseWriter, err error) {
-	log.Warn("unauthorized access attempt")
+	log.Warn(err)
 	w.WriteHeader(http.StatusUnauthorized)
+	Respond(w, Message(false, err.Error()))
+}
+
+// 402
+func HandlePaymentRequired(w http.ResponseWriter, err error) {
+	log.Warn(err)
+	w.WriteHeader(http.StatusPaymentRequired)
 	Respond(w, Message(false, err.Error()))
 }
 

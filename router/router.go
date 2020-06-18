@@ -295,6 +295,7 @@ func InitRouter() *mux.Router {
 	admin.Use(middleware.JwtAuthentication)      // check JWT and create context
 	admin.Use(middleware.CheckAdminPermissions) // check permissions for API usage
 	lk.Use(middleware.JwtAuthentication)       // check JWT and create context
+	lk.Use(middleware.CheckPermissionsBySubscription) // check subscription status
 
 	return router
 }
