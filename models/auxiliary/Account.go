@@ -54,6 +54,8 @@ func Login(email, password string) map[string]interface{} {
 	resp := u.Message(true, "Logged In")
 	resp["token"] = tokenString
 	resp["user_id"] = user.ID
+	resp["subscription_type_id"] = user.SubscriptionTypeID
+	resp["subscription_expired"] = IsExpired
 
 	return resp
 }

@@ -3,7 +3,10 @@ package AuthController
 import (
 	"encoding/json"
 	"errors"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"paseca/db"
 	"paseca/models"
 	"paseca/models/auxiliary"
@@ -33,15 +36,54 @@ type NewAccountRequest struct {
 	Name      string `json:"name"`
 	Surname   string `json:"surname"`
 	Password  string `json:"password"`
+	Captcha   string `json:"captcha"`
+}
+
+type CaptchaResponse struct {
+	Success bool `json:"success"`
 }
 
 var Registration = func(w http.ResponseWriter, r *http.Request) {
 	account := &NewAccountRequest{}
 	user := models.User{}
+	cr := &CaptchaResponse{}
 
 	err := json.NewDecoder(r.Body).Decode(account)
 	if err != nil {
 		u.HandleBadRequest(w, err)
+		return
+	}
+
+	// verify captcha
+	secret := os.Getenv("captcha_secret")
+	if secret == "" {
+		panic("no captcha secret provided")
+	}
+
+	resp, err := http.Get("https://www.google.com/recaptcha/api/siteverify?" +
+		"secret=" + secret + "&" +
+		"response=" + account.Captcha)
+
+	if err != nil {
+		u.HandleInternalError(w, err)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Debug(string(body))
+
+	err = json.Unmarshal(body, cr)
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	if cr.Success == false {
+		u.HandleUnauthorized(w, errors.New("bad captcha"))
 		return
 	}
 
