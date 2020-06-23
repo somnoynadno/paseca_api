@@ -7,7 +7,7 @@ type User struct {
 	Email                string             `json:"email" gorm:"not null;unique_index;"`
 	Name                 string             `json:"name" gorm:"not null;"`
 	Surname              string             `json:"surname" gorm:"not null;"`
-	Password             string             `json:"password" gorm:"not null;"`
+	Password             string             `json:"-" gorm:"not null;"`
 	IsAdmin              bool               `json:"is_admin" gorm:"not null; default:false;"`
 	LastLogin            *time.Time         `json:"last_login"`
 	SubscriptionEnd      *time.Time         `json:"subscription_end"`

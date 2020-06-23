@@ -290,10 +290,14 @@ func InitRouter() *mux.Router {
 
 	// middleware usage
 	// do NOT modify the order
-	api.Use(middleware.LogBody) // log HTTP body, method and URI
-	api.Use(middleware.CORS)   // enable CORS headers
+	api.Use(middleware.CORS)    // enable CORS headers
+	api.Use(middleware.LogPath) // log HTTP request URI and method
+
+	admin.Use(middleware.LogBody)                // log HTTP body
 	admin.Use(middleware.JwtAuthentication)      // check JWT and create context
-	admin.Use(middleware.CheckAdminPermissions) // check permissions for API usage
+	admin.Use(middleware.CheckAdminPermissions)  // check permissions for API usage
+
+	lk.Use(middleware.LogBody)                 // log HTTP body
 	lk.Use(middleware.JwtAuthentication)       // check JWT and create context
 	lk.Use(middleware.CheckPermissionsBySubscription) // check subscription status
 

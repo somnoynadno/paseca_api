@@ -11,16 +11,35 @@ import (
 	"paseca/models"
 	u "paseca/utils"
 	"strconv"
+	"time"
 )
 
+type UserCreateModel struct {
+	Email                string             `json:"email"`
+	Name                 string             `json:"name"`
+	Surname              string             `json:"surname"`
+	Password             string             `json:"password"`
+	IsAdmin              bool               `json:"is_admin"`
+	SubscriptionEnd      *time.Time         `json:"subscription_end"`
+	SubscriptionStatusID uint               `json:"subscription_status_id"`
+	SubscriptionTypeID   uint               `json:"subscription_type_id"`
+}
+
 var UserCreate = func(w http.ResponseWriter, r *http.Request) {
-	User := &models.User{}
+	User := &UserCreateModel{}
 	err := json.NewDecoder(r.Body).Decode(User)
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
 		return
 	}
+
+	hash, err := u.HashPassword(User.Password)
+	if err != nil {
+		u.HandleInternalError(w, err)
+		return
+	}
+	User.Password = hash
 
 	db := db.GetDB()
 	err = db.Create(User).Error
