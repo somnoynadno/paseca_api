@@ -245,3 +245,49 @@ var GetBeeFamiliesByBeeFarmID = func(w http.ResponseWriter, r *http.Request) {
 		u.RespondJSON(w, res)
 	}
 }
+
+type BeeFamilyEditModel struct {
+	ID                 uint     `json:"id"`
+	Name               string   `json:"name"`
+	QueenBeeBornDate   *string  `json:"queen_bee_born_date"`
+	LastInspectionDate *string  `json:"last_inspection_date"`
+	BeeBreedID         uint     `json:"bee_breed_id"`
+	BeeFamilyStatusID  uint     `json:"bee_family_status_id"`
+	IsControl          bool     `json:"is_control"`
+}
+
+var EditBeeFamily = func(w http.ResponseWriter, r *http.Request) {
+	BeeFamily := &models.BeeFamily{}
+
+	params := mux.Vars(r)
+	id := params["id"]
+
+	db := db.GetDB()
+	err := db.First(&BeeFamily, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	newBeeFamily := &BeeFamilyEditModel{}
+	err = json.NewDecoder(r.Body).Decode(newBeeFamily)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	db.Model(&BeeFamily).Update("is_control", newBeeFamily.IsControl)
+	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
+	}
+}
