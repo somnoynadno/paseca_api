@@ -70,8 +70,8 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		r = r.WithContext(ctx)
 
 		// useful for monitoring
-		log.Debug("user id: ", tk.UserID)
-		log.Debug("is admin: ", tk.IsAdmin)
+		log.Debug("user id: ", tk.UserID, ", is admin: ", tk.IsAdmin,
+			", subscription: ", tk.SubscriptionTypeID, ", expired: ", tk.SubscriptionExpired)
 
 		next.ServeHTTP(w, r)
 	})

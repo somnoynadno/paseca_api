@@ -134,6 +134,7 @@ var GetBeeFamilyByID = func(w http.ResponseWriter, r *http.Request) {
 	err := db.Preload("BeeBreed").Preload("BeeFamilyStatus").Preload("Hive").
 		Preload("BeeDiseases").Preload("HoneyHarvests").Preload("ControlHarvests").
 		Preload("Parent1").Preload("Parent2").
+		Preload("Swarms").Preload("Swarms.SwarmStatus").
 		Where("id = ?", id).Find(&BeeFamily).Error
 
 	if err != nil {
