@@ -62,14 +62,16 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 		v := u.Values{M: map[string]string {
 			"user_id": fmt.Sprint(tk.UserID),
 			"is_admin": strconv.FormatBool(tk.IsAdmin),
+			"subscription_type_id": fmt.Sprint(tk.SubscriptionTypeID),
+			"subscription_expired": strconv.FormatBool(tk.SubscriptionExpired),
 		}}
 
 		ctx := context.WithValue(r.Context(), "context", v)
 		r = r.WithContext(ctx)
 
 		// useful for monitoring
-		log.Debug("user id: ", tk.UserID)
-		log.Debug("is admin: ", tk.IsAdmin)
+		log.Debug("user id: ", tk.UserID, ", is admin: ", tk.IsAdmin,
+			", subscription: ", tk.SubscriptionTypeID, ", expired: ", tk.SubscriptionExpired)
 
 		next.ServeHTTP(w, r)
 	})

@@ -10,7 +10,11 @@ import (
 
 var LogBody = func(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info(fmt.Sprintf("Request from %s on %s with %s method", r.Host, r.RequestURI, r.Method))
+		// pass on OPTIONS
+		if r.Method == "OPTIONS" {
+			next.ServeHTTP(w, r)
+			return
+		}
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -25,6 +29,17 @@ var LogBody = func(next http.Handler) http.Handler {
 
 		// And now set a new body, which will simulate the same data we read:
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+var LogPath = func(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// pass on OPTIONS
+		if r.Method != "OPTIONS" {
+			log.Info(fmt.Sprintf("Request from %s on %s with %s method", r.Host, r.RequestURI, r.Method))
+		}
 
 		next.ServeHTTP(w, r)
 	})

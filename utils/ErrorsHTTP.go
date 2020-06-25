@@ -7,21 +7,21 @@ import (
 
 // 400
 func HandleBadRequest(w http.ResponseWriter, err error) {
-	log.Error(err)
+	log.Warn(err)
 	w.WriteHeader(http.StatusBadRequest)
 	Respond(w, Message(false, err.Error()))
 }
 
 // 401
 func HandleUnauthorized(w http.ResponseWriter, err error) {
-	log.Warn(err)
+	log.Info(err)
 	w.WriteHeader(http.StatusUnauthorized)
 	Respond(w, Message(false, err.Error()))
 }
 
 // 402
 func HandlePaymentRequired(w http.ResponseWriter, err error) {
-	log.Warn(err)
+	log.Info(err)
 	w.WriteHeader(http.StatusPaymentRequired)
 	Respond(w, Message(false, err.Error()))
 }

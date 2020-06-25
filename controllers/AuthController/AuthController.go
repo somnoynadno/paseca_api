@@ -74,8 +74,6 @@ var Registration = func(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Debug(string(body))
-
 	err = json.Unmarshal(body, cr)
 	if err != nil {
 		u.HandleBadRequest(w, err)
@@ -95,8 +93,14 @@ var Registration = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hash, err := u.HashPassword(account.Password)
+	if err != nil {
+		u.HandleInternalError(w, err)
+		return
+	}
+
+	user.Password = hash
 	user.Email = account.Email
-	user.Password = account.Password
 	user.Surname = account.Surname
 	user.Name = account.Name
 

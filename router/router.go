@@ -204,6 +204,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/bee_family/{id}", BeeFarmControllers.DeleteBeeFamily).Methods("DELETE")
 	lk.HandleFunc("/do_bee_family_inspection/{id}", BeeFarmControllers.DoBeeFamilyInspection).Methods("POST")
 	lk.HandleFunc("/bee_families_by_bee_farm_id/{id}", BeeFarmControllers.GetBeeFamiliesByBeeFarmID).Methods("GET")
+	lk.HandleFunc("/bee_family/{id}", BeeFarmControllers.EditBeeFamily).Methods("PUT")
 
 	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.GetBeeFamilyStatuses).Methods("GET")
 	lk.HandleFunc("/bee_family_statuses", CustomTypesControllers.CreateBeeFamilyStatus).Methods("POST")
@@ -274,6 +275,7 @@ func InitRouter() *mux.Router {
 
 	lk.HandleFunc("/swarm", BeeFarmControllers.CreateSwarm).Methods("POST")
 	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.DeleteSwarm).Methods("DELETE")
+	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.EditSwarm).Methods("PUT")
 	lk.HandleFunc("/swarms_by_bee_farm_id/{id}", BeeFarmControllers.GetSwarmsByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/swarm_statuses", CustomTypesControllers.GetSwarmStatuses).Methods("GET")
@@ -290,10 +292,14 @@ func InitRouter() *mux.Router {
 
 	// middleware usage
 	// do NOT modify the order
-	api.Use(middleware.LogBody) // log HTTP body, method and URI
-	api.Use(middleware.CORS)   // enable CORS headers
+	api.Use(middleware.CORS)    // enable CORS headers
+	api.Use(middleware.LogPath) // log HTTP request URI and method
+
+	admin.Use(middleware.LogBody)                // log HTTP body
 	admin.Use(middleware.JwtAuthentication)      // check JWT and create context
-	admin.Use(middleware.CheckAdminPermissions) // check permissions for API usage
+	admin.Use(middleware.CheckAdminPermissions)  // check permissions for API usage
+
+	lk.Use(middleware.LogBody)                 // log HTTP body
 	lk.Use(middleware.JwtAuthentication)       // check JWT and create context
 	lk.Use(middleware.CheckPermissionsBySubscription) // check subscription status
 

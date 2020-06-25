@@ -134,6 +134,7 @@ var GetBeeFamilyByID = func(w http.ResponseWriter, r *http.Request) {
 	err := db.Preload("BeeBreed").Preload("BeeFamilyStatus").Preload("Hive").
 		Preload("BeeDiseases").Preload("HoneyHarvests").Preload("ControlHarvests").
 		Preload("Parent1").Preload("Parent2").
+		Preload("Swarms").Preload("Swarms.SwarmStatus").
 		Where("id = ?", id).Find(&BeeFamily).Error
 
 	if err != nil {
@@ -242,5 +243,63 @@ var GetBeeFamiliesByBeeFarmID = func(w http.ResponseWriter, r *http.Request) {
 		u.HandleBadRequest(w, err)
 	} else {
 		u.RespondJSON(w, res)
+	}
+}
+
+type BeeFamilyEditModel struct {
+	ID                 uint     `json:"id"`
+	Name               string   `json:"name"`
+	QueenBeeBornDate   *string  `json:"queen_bee_born_date"`
+	LastInspectionDate *string  `json:"last_inspection_date"`
+	BeeBreedID         uint     `json:"bee_breed_id"`
+	BeeFamilyStatusID  uint     `json:"bee_family_status_id"`
+	IsControl          bool     `json:"is_control"`
+}
+
+var EditBeeFamily = func(w http.ResponseWriter, r *http.Request) {
+	BeeFamily := &models.BeeFamily{}
+
+	params := mux.Vars(r)
+	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
+
+	db := db.GetDB()
+	err := db.First(&BeeFamily, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			u.HandleNotFound(w)
+		} else {
+			u.HandleBadRequest(w, err)
+		}
+		return
+	}
+
+	if BeeFamily.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
+	newBeeFamily := &BeeFamilyEditModel{}
+	err = json.NewDecoder(r.Body).Decode(newBeeFamily)
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+		return
+	}
+
+	qbbd, _ := time.Parse("2006-01-02", *newBeeFamily.QueenBeeBornDate)
+	lid, _ := time.Parse("2006-01-02", *newBeeFamily.LastInspectionDate)
+
+	err = db.Model(&BeeFamily).Update("queen_bee_born_date", qbbd).
+		Update("last_inspection_date", lid).Update("name", newBeeFamily.Name).
+		Update("bee_breed_id", newBeeFamily.BeeBreedID).
+		Update("is_control", newBeeFamily.IsControl).
+		Update("bee_family_status_id", newBeeFamily.BeeFamilyStatusID).Error
+
+	if err != nil {
+		u.HandleBadRequest(w, err)
+	} else {
+		u.Respond(w, u.Message(true, "OK"))
 	}
 }

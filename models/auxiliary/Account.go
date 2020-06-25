@@ -28,7 +28,7 @@ func Login(email, password string) map[string]interface{} {
 		return u.Message(false, "Connection error. Please retry")
 	}
 
-	if user.Password != password { // Password does not match!
+	if !u.CheckPasswordHash(password, user.Password) { // Password does not match!
 		return u.Message(false, "Invalid login credentials. Please try again")
 	}
 	// Worked! Logged In
