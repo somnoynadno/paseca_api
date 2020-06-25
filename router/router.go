@@ -275,6 +275,7 @@ func InitRouter() *mux.Router {
 
 	lk.HandleFunc("/swarm", BeeFarmControllers.CreateSwarm).Methods("POST")
 	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.DeleteSwarm).Methods("DELETE")
+	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.EditSwarm).Methods("PUT")
 	lk.HandleFunc("/swarms_by_bee_farm_id/{id}", BeeFarmControllers.GetSwarmsByBeeFarmID).Methods("GET")
 
 	lk.HandleFunc("/swarm_statuses", CustomTypesControllers.GetSwarmStatuses).Methods("GET")

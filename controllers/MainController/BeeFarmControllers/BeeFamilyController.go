@@ -261,6 +261,7 @@ var EditBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	id := params["id"]
+	userID := u.GetUserIDFromRequest(r)
 
 	db := db.GetDB()
 	err := db.First(&BeeFamily, id).Error
@@ -274,6 +275,11 @@ var EditBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if BeeFamily.UserID != userID {
+		u.HandleForbidden(w, errors.New("you are not allowed to do that"))
+		return
+	}
+
 	newBeeFamily := &BeeFamilyEditModel{}
 	err = json.NewDecoder(r.Body).Decode(newBeeFamily)
 
@@ -282,8 +288,14 @@ var EditBeeFamily = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db.Model(&BeeFamily).Update("is_control", newBeeFamily.IsControl)
-	err = db.Model(&BeeFamily).Updates(newBeeFamily).Error
+	qbbd, _ := time.Parse("2006-01-02", *newBeeFamily.QueenBeeBornDate)
+	lid, _ := time.Parse("2006-01-02", *newBeeFamily.LastInspectionDate)
+
+	err = db.Model(&BeeFamily).Update("queen_bee_born_date", qbbd).
+		Update("last_inspection_date", lid).Update("name", newBeeFamily.Name).
+		Update("bee_breed_id", newBeeFamily.BeeBreedID).
+		Update("is_control", newBeeFamily.IsControl).
+		Update("bee_family_status_id", newBeeFamily.BeeFamilyStatusID).Error
 
 	if err != nil {
 		u.HandleBadRequest(w, err)
