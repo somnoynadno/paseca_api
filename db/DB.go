@@ -26,7 +26,15 @@ func init() {
 		db = conn
 	}
 
-	// Migrate the schema
+	migrateSchema()
+	addConstraints()
+}
+
+func GetDB() *gorm.DB {
+	return db
+}
+
+func migrateSchema() {
 	// Notice: many-to-many first
 	db.AutoMigrate(
 		models.FamilyDisease{},
@@ -54,9 +62,39 @@ func init() {
 		models.User{},
 		models.WikiPage{},
 		models.WikiSection{},
-		)
+	)
 }
 
-func GetDB() *gorm.DB {
-	return db
+func addConstraints() {
+	// base models with user
+	// delete cascade
+	db.Model(models.BeeFarm{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.PollenHarvest{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.Hive{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.Reminder{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.BeeFamily{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.Swarm{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.HoneyHarvest{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.HoneySale{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.ControlHarvest{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.FamilyDisease{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	// base models with custom
+	// delete cascade too
+	db.Model(models.BeeBreed{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.SwarmStatus{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.BeeFamilyStatus{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.HiveFormat{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.HiveFrameType{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.HoneyType{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.BeeFarmType{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(models.BeeFarmSize{}).AddForeignKey("creator_id", "users(id)", "CASCADE", "CASCADE")
+	// cascade on other models
+	db.Model(models.Reminder{}).AddForeignKey("bee_farm_id", "bee_farms(id)", "CASCADE", "CASCADE")
+	db.Model(models.Swarm{}).AddForeignKey("bee_family_id", "bee_families(id)", "CASCADE", "CASCADE")
+	db.Model(models.FamilyDisease{}).AddForeignKey("bee_family_id", "bee_families(id)", "CASCADE", "CASCADE")
+	// important restrictions on user model
+	db.Model(models.User{}).AddForeignKey("subscription_type_id", "subscription_types(id)", "RESTRICT", "CASCADE")
+	db.Model(models.User{}).AddForeignKey("subscription_status_id", "subscription_statuses(id)", "RESTRICT", "CASCADE")
+	// and some other restrictions
+	db.Model(models.WikiPage{}).AddForeignKey("wiki_section_id", "wiki_sections(id)", "RESTRICT", "CASCADE")
 }
