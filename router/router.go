@@ -271,8 +271,6 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/check_reminder/{id}", BeeFarmControllers.CheckReminder).Methods("POST")
 	lk.HandleFunc("/reminders_by_bee_farm_id/{id}", BeeFarmControllers.GetRemindersByBeeFarmID).Methods("GET")
 
-	lk.HandleFunc("/subscription_types", ControllersLK.GetSubscriptionTypes).Methods("GET")
-
 	lk.HandleFunc("/swarm", BeeFarmControllers.CreateSwarm).Methods("POST")
 	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.DeleteSwarm).Methods("DELETE")
 	lk.HandleFunc("/swarm/{id}", BeeFarmControllers.EditSwarm).Methods("PUT")
@@ -289,6 +287,7 @@ func InitRouter() *mux.Router {
 	lk.HandleFunc("/wiki_page/{id}", WikiControllers.GetWikiPageByID).Methods("GET")
 
 	landing.HandleFunc("/get_stats", OtherControllers.GetStatsForLanding).Methods("GET")
+	landing.HandleFunc("/subscription_types", ControllersLK.GetSubscriptionTypes).Methods("GET")
 
 	// middleware usage
 	// do NOT modify the order
@@ -299,8 +298,8 @@ func InitRouter() *mux.Router {
 	admin.Use(middleware.JwtAuthentication)      // check JWT and create context
 	admin.Use(middleware.CheckAdminPermissions)  // check permissions for API usage
 
-	lk.Use(middleware.LogBody)                 // log HTTP body
-	lk.Use(middleware.JwtAuthentication)       // check JWT and create context
+	lk.Use(middleware.LogBody)                        // log HTTP body
+	lk.Use(middleware.JwtAuthentication)              // check JWT and create context
 	lk.Use(middleware.CheckPermissionsBySubscription) // check subscription status
 
 	return router
